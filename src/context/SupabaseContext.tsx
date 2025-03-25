@@ -4,13 +4,19 @@ import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
+// Define result types for auth operations
+type AuthResult = {
+  error?: Error;
+  data?: any;
+};
+
 // Define the context type
 type SupabaseContextType = {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string, name: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<AuthResult>;
+  signUp: (email: string, password: string, name: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
 };
@@ -49,19 +55,20 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, []);
 
   // Sign in function
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<AuthResult> => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error, data } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       toast.success('Signed in successfully');
+      return { data };
     } catch (error: any) {
       toast.error('Error signing in', { description: error.message });
-      throw error;
+      return { error };
     }
   };
 
   // Sign up function
-  const signUp = async (email: string, password: string, name: string) => {
+  const signUp = async (email: string, password: string, name: string): Promise<AuthResult> => {
     try {
       const { error, data } = await supabase.auth.signUp({ 
         email, 
@@ -78,9 +85,11 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       } else {
         toast.info('Please check your email to confirm your account');
       }
+      
+      return { data };
     } catch (error: any) {
       toast.error('Error creating account', { description: error.message });
-      throw error;
+      return { error };
     }
   };
 

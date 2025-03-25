@@ -36,10 +36,13 @@ const Register = () => {
   const onSubmit = async (data: RegisterFormValues) => {
     try {
       setIsLoading(true);
-      const { error } = await signUp(data.email, data.password, data.name);
       
-      if (error) {
-        throw error;
+      // Call signUp without destructuring the return value
+      const result = await signUp(data.email, data.password, data.name);
+      
+      // Check if result exists and has an error property
+      if (result && result.error) {
+        throw result.error;
       }
       
       toast.success("Registration successful", {

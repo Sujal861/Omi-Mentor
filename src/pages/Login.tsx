@@ -34,10 +34,13 @@ const Login = () => {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       setIsLoading(true);
-      const { error } = await signIn(data.email, data.password);
       
-      if (error) {
-        throw error;
+      // Call signIn without destructuring the return value
+      const result = await signIn(data.email, data.password);
+      
+      // Check if result exists and has an error property
+      if (result && result.error) {
+        throw result.error;
       }
       
       toast.success("Login successful");
