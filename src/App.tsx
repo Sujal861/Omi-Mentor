@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import Navbar from "./components/layout/Navbar";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import React from "react";
 
 const queryClient = new QueryClient();
 

@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/layout/PageTransition';
 import UserProfile from '../components/profile/UserProfile';
 import { Card } from '@/components/ui/card';
-import { Languages, Bell, Moon, LogOut } from 'lucide-react';
+import { Languages, Bell, LogOut } from 'lucide-react';
 import { Button } from '@/components/common/Button';
 import { useSupabase } from '@/context/SupabaseContext';
 import { useUserData } from '@/hooks/useUserData';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
+import { HealthConnectCard } from '@/components/health/HealthConnectCard';
 
 const Profile = () => {
   const { user, signOut } = useSupabase();
@@ -82,13 +84,15 @@ const Profile = () => {
                 
                 <div className="flex items-center justify-between py-3 border-b">
                   <div className="flex items-center space-x-3">
-                    <Moon size={20} className="text-gray-500" />
+                    <div className="text-gray-500">
+                      {/* ThemeToggle will show the current theme icon */}
+                    </div>
                     <div>
                       <h3 className="font-medium">Dark Mode</h3>
                       <p className="text-sm text-gray-500">Toggle between light and dark mode</p>
                     </div>
                   </div>
-                  <Button variant="soft" size="sm">Auto</Button>
+                  <ThemeToggle />
                 </div>
                 
                 <div className="flex items-center justify-between py-3">
@@ -104,13 +108,7 @@ const Profile = () => {
               </div>
             </Card>
             
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Health Data</h2>
-              <p className="text-gray-500 mb-4">
-                Connect your wearables and health apps to improve your wellness coaching experience.
-              </p>
-              <Button variant="soft" size="sm">Connect devices</Button>
-            </Card>
+            <HealthConnectCard />
           </div>
         </div>
       </div>
