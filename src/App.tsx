@@ -18,11 +18,11 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <SupabaseProvider>
-        <Toaster />
-        <Sonner position="top-right" expand={true} closeButton={true} richColors={true} />
-        <BrowserRouter>
+    <SupabaseProvider>
+      <BrowserRouter>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner position="top-right" expand={true} closeButton={true} richColors={true} />
           <div className="min-h-screen">
             <Navbar />
             <AnimatePresence mode="wait">
@@ -36,9 +36,9 @@ const App = () => (
               </Routes>
             </AnimatePresence>
           </div>
-        </BrowserRouter>
-      </SupabaseProvider>
-    </TooltipProvider>
+        </TooltipProvider>
+      </BrowserRouter>
+    </SupabaseProvider>
   </QueryClientProvider>
 );
 
