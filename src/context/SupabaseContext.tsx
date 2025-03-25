@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
@@ -74,7 +75,8 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         email, 
         password,
         options: {
-          data: { name }
+          data: { name },
+          emailRedirectTo: `${window.location.origin}/login`,
         }
       });
       
