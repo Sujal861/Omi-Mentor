@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
@@ -19,6 +18,7 @@ type SupabaseContextType = {
   signUp: (email: string, password: string, name: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  supabase: typeof supabase; // Expose the supabase client
 };
 
 // Create the context with a default value
@@ -127,6 +127,7 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     signUp,
     signOut,
     resetPassword,
+    supabase, // Include the supabase client in the context value
   };
 
   return (

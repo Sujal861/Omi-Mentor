@@ -10,6 +10,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
 import { useSupabase } from "@/context/SupabaseContext";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { MailCheck } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -20,8 +22,11 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
-  const { signIn } = useSupabase();
+  const { signIn, supabase } = useSupabase();
   const [isLoading, setIsLoading] = useState(false);
+  const [isResendingEmail, setIsResendingEmail] = useState(false);
+  const [emailNotConfirmed, setEmailNotConfirmed] = useState(false);
+  const [email, setEmail] = useState("");
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -34,12 +39,18 @@ const Login = () => {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       setIsLoading(true);
+      setEmail(data.email);
       
       // Call signIn without destructuring the return value
       const result = await signIn(data.email, data.password);
       
       // Check if result exists and has an error property
       if (result && result.error) {
+        // Check specifically for email_not_confirmed error
+        if (result.error.code === "email_not_confirmed") {
+          setEmailNotConfirmed(true);
+          throw new Error("Email not confirmed. Please check your inbox or request a new confirmation email.");
+        }
         throw result.error;
       }
       
@@ -55,6 +66,31 @@ const Login = () => {
     }
   };
 
+  const resendConfirmationEmail = async () => {
+    if (!email) return;
+
+    try {
+      setIsResendingEmail(true);
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+      });
+
+      if (error) throw error;
+      
+      toast.success("Confirmation email sent", {
+        description: "Please check your inbox for the confirmation link",
+      });
+    } catch (error: any) {
+      console.error("Error resending email:", error);
+      toast.error("Failed to resend confirmation email", {
+        description: error.message || "Please try again later",
+      });
+    } finally {
+      setIsResendingEmail(false);
+    }
+  };
+
   return (
     <div className="flex justify-center items-center min-h-[80vh] px-4">
       <Card className="w-full max-w-md">
@@ -65,6 +101,23 @@ const Login = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {emailNotConfirmed && (
+            <Alert className="mb-4 border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-800">
+              <MailCheck className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+              <AlertDescription className="text-amber-800 dark:text-amber-300">
+                Your email is not confirmed yet. Please check your inbox or 
+                <Button 
+                  variant="link" 
+                  className="text-primary px-1 h-auto" 
+                  onClick={resendConfirmationEmail}
+                  disabled={isResendingEmail}
+                >
+                  {isResendingEmail ? "Sending..." : "resend confirmation email"}
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -74,7 +127,14 @@ const Login = () => {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="your.email@example.com" {...field} />
+                      <Input 
+                        placeholder="your.email@example.com" 
+                        {...field} 
+                        onChange={(e) => {
+                          field.onChange(e);
+                          setEmail(e.target.value);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
