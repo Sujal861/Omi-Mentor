@@ -1,13 +1,44 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PageTransition from '../components/layout/PageTransition';
 import UserProfile from '../components/profile/UserProfile';
-import { userData } from '../utils/mockData';
 import { Card } from '@/components/ui/card';
 import { Languages, Bell, Moon, LogOut } from 'lucide-react';
 import { Button } from '@/components/common/Button';
+import { useSupabase } from '@/context/SupabaseContext';
+import { useUserData } from '@/hooks/useUserData';
 
 const Profile = () => {
+  const { user, signOut } = useSupabase();
+  const { profile, loading } = useUserData();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user && !loading) {
+      navigate('/login');
+    }
+  }, [user, loading, navigate]);
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/login');
+  };
+
+  if (loading) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex items-center justify-center">
+          <p>Loading profile...</p>
+        </div>
+      </PageTransition>
+    );
+  }
+
+  if (!user || !profile) {
+    return null; // Will redirect via useEffect
+  }
+
   return (
     <PageTransition>
       <div className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -16,9 +47,9 @@ const Profile = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1">
             <UserProfile 
-              name={userData.name} 
-              email={userData.email} 
-              avatar={userData.avatar}
+              name={profile.name} 
+              email={profile.email} 
+              avatar={profile.avatar_url}
             />
           </div>
           
@@ -68,7 +99,7 @@ const Profile = () => {
                       <p className="text-sm text-gray-500">Sign out from your account</p>
                     </div>
                   </div>
-                  <Button variant="destructive" size="sm">Logout</Button>
+                  <Button variant="destructive" size="sm" onClick={handleLogout}>Logout</Button>
                 </div>
               </div>
             </Card>
