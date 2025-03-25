@@ -47,7 +47,9 @@ const Login = () => {
       // Check if result exists and has an error property
       if (result && result.error) {
         // Check specifically for email_not_confirmed error
-        if (result.error.code === "email_not_confirmed") {
+        // Using type assertion to access the code property safely
+        const supabaseError = result.error as { code?: string, message: string };
+        if (supabaseError.code === "email_not_confirmed") {
           setEmailNotConfirmed(true);
           throw new Error("Email not confirmed. Please check your inbox or request a new confirmation email.");
         }
