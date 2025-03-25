@@ -44,17 +44,17 @@ export const insightData = [
   {
     title: 'Productivity peak detected',
     description: 'Your focus is highest between 9-11 AM. Schedule important tasks during this time.',
-    type: 'productivity',
+    type: 'productivity' as const,
   },
   {
     title: 'Stress levels rising',
     description: 'Your stress readings are 20% higher this week. Try taking more breaks.',
-    type: 'ai',
+    type: 'ai' as const,
   },
   {
     title: 'Sleep quality improved',
     description: 'Your recent sleep pattern shows better quality. Keep maintaining your schedule.',
-    type: 'wellness',
+    type: 'wellness' as const,
   },
 ];
 

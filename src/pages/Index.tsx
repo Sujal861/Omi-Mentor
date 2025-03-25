@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Coffee, Droplets, Yoga } from 'lucide-react';
+import { Coffee, Droplets, Stretch } from 'lucide-react';
 import PageTransition from '../components/layout/PageTransition';
 import ActivityCard from '../components/dashboard/ActivityCard';
 import InsightPanel from '../components/dashboard/InsightPanel';
@@ -122,7 +122,7 @@ const Index = () => {
             />
             
             <ReminderCard
-              icon={<Yoga size={20} />}
+              icon={<Stretch size={20} />}
               title="Quick stretch"
               description="Stretch your back and neck for 1 minute"
               color="balance-green"
