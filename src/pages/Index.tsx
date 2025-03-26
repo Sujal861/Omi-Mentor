@@ -14,6 +14,8 @@ import { FitDataDisplay } from "@/components/dashboard/FitDataDisplay";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { GoogleFitConnector } from "@/components/integration/GoogleFitConnector";
 import { motion } from "framer-motion";
+import { stressData, activityData, insightData } from "@/utils/mockData";
+import { Bell, Clock } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -76,12 +78,28 @@ const Index = () => {
                     onRefresh={refreshFitData} 
                   />
                 )}
-                <ActivityCard />
-                <StressChart />
+                <ActivityCard 
+                  type={activityData[0].type}
+                  value={activityData[0].value}
+                  unit={activityData[0].unit}
+                  description={activityData[0].description}
+                />
+                <StressChart 
+                  data={stressData}
+                  title="Stress Levels"
+                  description="Your stress levels throughout the day"
+                />
               </div>
               <div className="space-y-6">
-                <InsightPanel />
-                <ReminderCard />
+                <InsightPanel insights={insightData} />
+                <ReminderCard 
+                  icon={<Bell size={20} />}
+                  title="Meditation Time"
+                  description="It's time for your daily meditation session"
+                  color="balance-indigo"
+                  buttonText="Complete"
+                  onAction={() => console.log("Reminder action clicked")}
+                />
                 <HealthConnectCard />
               </div>
             </div>
