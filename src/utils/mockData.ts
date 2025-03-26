@@ -15,25 +15,25 @@ export const stressData = [
 
 export const activityData = [
   {
-    type: 'focus',
+    type: 'focus' as const,
     value: 5.2,
     unit: 'hrs',
     description: 'Total focus time today',
   },
   {
-    type: 'heart',
+    type: 'heart' as const,
     value: 72,
     unit: 'bpm',
     description: 'Average heart rate',
   },
   {
-    type: 'sleep',
+    type: 'sleep' as const,
     value: 7.5,
     unit: 'hrs',
     description: 'Sleep duration last night',
   },
   {
-    type: 'energy',
+    type: 'energy' as const,
     value: 85,
     unit: '%',
     description: 'Current energy level',
