@@ -1,10 +1,14 @@
 
 import { FitnessData } from "@/hooks/useFitData";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Activity, Heart, Moon, Flame } from "lucide-react";
+import { Activity, Heart, Moon, Flame, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { detectHealthIssues, sendHealthAlert } from "@/services/healthMonitoring";
+import { useSupabase } from "@/context/SupabaseContext";
 
 interface FitDataDisplayProps {
   fitData: FitnessData | null;
@@ -13,6 +17,20 @@ interface FitDataDisplayProps {
 }
 
 export const FitDataDisplay = ({ fitData, isLoading, onRefresh }: FitDataDisplayProps) => {
+  const { user } = useSupabase();
+  
+  useEffect(() => {
+    // Check for health issues when fitData changes
+    if (fitData && user) {
+      const { hasIssue, message } = detectHealthIssues(fitData);
+      
+      if (hasIssue && user.email) {
+        // Send health alert email
+        sendHealthAlert(user.email, message);
+      }
+    }
+  }, [fitData, user]);
+  
   if (!fitData) {
     return (
       <Card>
@@ -26,6 +44,9 @@ export const FitDataDisplay = ({ fitData, isLoading, onRefresh }: FitDataDisplay
       </Card>
     );
   }
+  
+  // Check for health issues to display alerts
+  const { hasIssue, message } = detectHealthIssues(fitData);
 
   return (
     <motion.div
@@ -53,6 +74,15 @@ export const FitDataDisplay = ({ fitData, isLoading, onRefresh }: FitDataDisplay
           </div>
         </CardHeader>
         <CardContent>
+          {hasIssue && (
+            <Alert className="mb-4 border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-800">
+              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+              <AlertDescription className="text-amber-800 dark:text-amber-300">
+                {message}
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <StatsCard
               icon={<Activity size={18} className="text-blue-500" />}

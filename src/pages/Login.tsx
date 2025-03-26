@@ -110,6 +110,7 @@ const Login = () => {
   const handleGoogleFitConnect = () => {
     // Close the dialog and navigate to dashboard
     setShowGoogleFitDialog(false);
+    // Immediately navigate to dashboard
     navigate("/");
   };
 
