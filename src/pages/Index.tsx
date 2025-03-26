@@ -1,12 +1,13 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useSupabase } from "@/context/SupabaseContext";
-import { ActivityCard } from "@/components/dashboard/ActivityCard";
-import { StressChart } from "@/components/dashboard/StressChart";
-import { ReminderCard } from "@/components/dashboard/ReminderCard";
-import { InsightPanel } from "@/components/dashboard/InsightPanel";
-import { PageTransition } from "@/components/layout/PageTransition";
+import ActivityCard from "@/components/dashboard/ActivityCard";
+import StressChart from "@/components/dashboard/StressChart";
+import ReminderCard from "@/components/dashboard/ReminderCard";
+import InsightPanel from "@/components/dashboard/InsightPanel";
+import PageTransition from "@/components/layout/PageTransition";
 import { HealthConnectCard } from "@/components/health/HealthConnectCard";
 import { useFitData } from "@/hooks/useFitData";
 import { FitDataDisplay } from "@/components/dashboard/FitDataDisplay";
