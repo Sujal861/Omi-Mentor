@@ -10,24 +10,36 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Create an RPC function for creating the profiles table if it doesn't exist
 // This will work only if the RPC exists on the Supabase project
-supabase.rpc('create_profiles_table', {}).catch(() => {
-  console.log('Setting up RPC function for profile table creation...');
-  // Create this function in your Supabase SQL editor:
-  /*
-  create or replace function create_profiles_table()
-  returns void as $$
-  begin
-    create table if not exists profiles (
-      id uuid primary key references auth.users(id) on delete cascade,
-      name text,
-      email text,
-      avatar_url text,
-      created_at timestamp with time zone default current_timestamp
-    );
-  end;
-  $$ language plpgsql;
-  */
-});
+const initProfilesTable = async () => {
+  try {
+    const { error } = await supabase.rpc('create_profiles_table', {});
+    if (error) {
+      console.log('Setting up RPC function for profile table creation...');
+      console.error('RPC Error:', error.message);
+    }
+  } catch (err) {
+    console.error('Failed to call RPC function:', err);
+  }
+};
+
+// Call the initialization function
+initProfilesTable();
+
+// Create this function in your Supabase SQL editor:
+/*
+create or replace function create_profiles_table()
+returns void as $$
+begin
+  create table if not exists profiles (
+    id uuid primary key references auth.users(id) on delete cascade,
+    name text,
+    email text,
+    avatar_url text,
+    created_at timestamp with time zone default current_timestamp
+  );
+end;
+$$ language plpgsql;
+*/
 
 // Set up auth redirects globally
 supabase.auth.onAuthStateChange((event, session) => {
