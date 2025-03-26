@@ -71,20 +71,20 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Helper function to ensure profiles table exists
   const ensureProfilesTable = async () => {
     try {
-      await supabase.from('profiles').select('count(*)').limit(1);
-    } catch (error: any) {
-      if (error.code === '42P01') {
-        // Table doesn't exist, create it
-        await supabase.query(`
-          CREATE TABLE IF NOT EXISTS "profiles" (
-            id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-            name TEXT,
-            email TEXT,
-            avatar_url TEXT,
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-          );
-        `);
+      const { error: checkError } = await supabase
+        .from('profiles')
+        .select('count')
+        .limit(1);
+      
+      if (checkError && checkError.code === '42P01') {
+        // Table doesn't exist, create it via RPC
+        const { error: createError } = await supabase.rpc('create_profiles_table', {});
+        if (createError) {
+          console.error('Error creating profiles table:', createError);
+        }
       }
+    } catch (error) {
+      console.error('Error checking profiles table:', error);
     }
   };
 

@@ -31,29 +31,20 @@ export const useUserData = () => {
         
         // Check if the profiles table exists and create it if needed
         try {
-          // First, try to create the profiles table if it doesn't exist
-          const { error: tableError } = await supabase.rpc('create_profiles_if_not_exists');
+          // Try to access the profiles table to see if it exists
+          const { error: checkError } = await supabase
+            .from('profiles')
+            .select('count')
+            .limit(1);
           
-          if (tableError && tableError.code !== '42P01') {
-            // If the RPC doesn't exist, we'll create the table directly
-            if (tableError.message.includes('does not exist')) {
-              // Execute raw SQL to create the table
-              await supabase.from('profiles').select('count(*)').limit(1).catch(async () => {
-                // Table doesn't exist, create it
-                const { error: createTableError } = await supabase.query(`
-                  CREATE TABLE IF NOT EXISTS "profiles" (
-                    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-                    name TEXT,
-                    email TEXT,
-                    avatar_url TEXT,
-                    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-                  );
-                `);
-                
-                if (createTableError) {
-                  console.error('Error creating profiles table:', createTableError);
-                }
-              });
+          // If there's an error and it indicates the table doesn't exist
+          if (checkError && checkError.code === '42P01') {
+            // Table doesn't exist, create it using SQL function via RPC
+            const { error: createError } = await supabase.rpc('create_profiles_table', {});
+            
+            if (createError) {
+              console.error('Error creating profiles table via RPC:', createError);
+              // We'll continue and let the profile query attempt anyway
             }
           }
         } catch (tableInitError) {
@@ -128,23 +119,40 @@ export const useUserData = () => {
     
     try {
       // First check if the profiles table exists
-      try {
-        await supabase.from('profiles').select('count(*)').limit(1);
-      } catch (tableError: any) {
-        // Table doesn't exist, create it
-        if (tableError.code === '42P01') {
-          await supabase.query(`
-            CREATE TABLE IF NOT EXISTS "profiles" (
-              id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-              name TEXT,
-              email TEXT,
-              avatar_url TEXT,
-              created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-            );
-          `);
+      const { error: checkError } = await supabase
+        .from('profiles')
+        .select('count')
+        .limit(1);
+      
+      // If table doesn't exist, create it via RPC
+      if (checkError && checkError.code === '42P01') {
+        const { error: createError } = await supabase.rpc('create_profiles_table', {});
+        if (createError) {
+          console.error('Error creating profiles table:', createError);
+          throw createError;
         }
+        
+        // Now create the profile
+        const newProfile = {
+          id: user.id,
+          ...updates,
+          created_at: new Date().toISOString(),
+        };
+        
+        const { data: createdProfile, error: insertError } = await supabase
+          .from('profiles')
+          .insert(newProfile)
+          .select()
+          .single();
+        
+        if (insertError) throw insertError;
+        
+        setProfile(createdProfile);
+        toast.success('Profile created successfully');
+        return createdProfile;
       }
       
+      // If table exists, update the profile
       const { data, error } = await supabase
         .from('profiles')
         .update(updates)
