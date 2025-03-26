@@ -37,13 +37,37 @@ export const useUserData = () => {
           .single();
 
         if (error) {
-          console.error('Error fetching profile:', error);
+          // If the error is 'not found', it means the profile doesn't exist yet
+          if (error.code === 'PGRST116') {
+            // Create a new profile for the user
+            console.log('Profile not found, creating new profile');
+            const newProfile = {
+              id: user.id,
+              name: user.user_metadata?.name || '',
+              email: user.email || '',
+              avatar_url: null,
+              created_at: new Date().toISOString(),
+            };
+            
+            const { data: createdProfile, error: createError } = await supabase
+              .from('profiles')
+              .insert(newProfile)
+              .select()
+              .single();
+            
+            if (createError) {
+              throw createError;
+            }
+            
+            setProfile(createdProfile);
+            return;
+          }
           throw error;
         }
 
         setProfile(data);
-      } catch (error) {
-        console.error('Error:', error);
+      } catch (error: any) {
+        console.error('Error fetching profile:', error);
         toast.error('Failed to load profile data');
       } finally {
         setLoading(false);

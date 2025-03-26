@@ -83,6 +83,25 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (error) throw error;
       
       if (data.user) {
+        // After sign up, ensure we create the profile record
+        try {
+          const newProfile = {
+            id: data.user.id,
+            name,
+            email,
+            avatar_url: null,
+            created_at: new Date().toISOString(),
+          };
+          
+          // This might fail if the user is not yet confirmed, that's okay
+          // The profile will be created when they access their profile page
+          await supabase
+            .from('profiles')
+            .insert(newProfile);
+        } catch (profileError) {
+          console.error('Could not create profile during signup:', profileError);
+        }
+        
         toast.success('Account created successfully');
       } else {
         toast.info('Please check your email to confirm your account');
