@@ -19,7 +19,7 @@ type SupabaseContextType = {
   signUp: (email: string, password: string, name: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
-  supabase: typeof supabase; // Expose the supabase client
+  supabase: typeof supabase;
 };
 
 // Create the context with a default value
