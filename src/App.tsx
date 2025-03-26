@@ -34,8 +34,7 @@ const App = () => (
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="*" element={<NotFound />} />
-                {/* Redirect root to login if you want login to be the first page */}
-                <Route index element={<Navigate to="/login" replace />} />
+                {/* Remove the redirect to login so that the dashboard is the main page */}
               </Routes>
             </AnimatePresence>
           </div>

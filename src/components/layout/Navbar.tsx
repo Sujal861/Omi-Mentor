@@ -53,7 +53,7 @@ const Navbar = () => {
                 <div className="w-3 h-3 bg-white rounded-full" />
               </motion.div>
               <span className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-balance-blue to-balance-indigo">
-                Balance Boost
+                Omni Mentor
               </span>
             </Link>
           </div>
