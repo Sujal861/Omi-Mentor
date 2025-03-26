@@ -10,6 +10,6 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     // Use the current URL as the site URL for redirects
     // This ensures confirmation links work on any environment
-    site_url: window.location.origin,
+    redirectTo: window.location.origin,
   }
 });

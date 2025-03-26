@@ -129,7 +129,7 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     signUp,
     signOut,
     resetPassword,
-    supabase, // Include the supabase client in the context value
+    supabase,
   };
 
   return (
