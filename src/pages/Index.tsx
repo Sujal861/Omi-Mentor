@@ -1,135 +1,118 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Coffee, Droplets, Minimize2 } from 'lucide-react';
-import PageTransition from '../components/layout/PageTransition';
-import ActivityCard from '../components/dashboard/ActivityCard';
-import InsightPanel from '../components/dashboard/InsightPanel';
-import StressChart from '../components/dashboard/StressChart';
-import ReminderCard from '../components/dashboard/ReminderCard';
-import { activityData, insightData, stressData } from '../utils/mockData';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { useSupabase } from "@/context/SupabaseContext";
+import { ActivityCard } from "@/components/dashboard/ActivityCard";
+import { StressChart } from "@/components/dashboard/StressChart";
+import { ReminderCard } from "@/components/dashboard/ReminderCard";
+import { InsightPanel } from "@/components/dashboard/InsightPanel";
+import { PageTransition } from "@/components/layout/PageTransition";
+import { HealthConnectCard } from "@/components/health/HealthConnectCard";
+import { useFitData } from "@/hooks/useFitData";
+import { FitDataDisplay } from "@/components/dashboard/FitDataDisplay";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { GoogleFitConnector } from "@/components/integration/GoogleFitConnector";
+import { motion } from "framer-motion";
 
 const Index = () => {
-  const [mounted, setMounted] = useState(false);
-  
+  const navigate = useNavigate();
+  const { user } = useSupabase();
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [showConnector, setShowConnector] = useState<boolean>(false);
+  const { fitData, isLoading, refreshFitData } = useFitData(isConnected);
+
   useEffect(() => {
-    setMounted(true);
+    // Check if the user is connected to Google Fit (would be stored in a real app)
+    // For demo purposes, we'll keep it in state - in a real app would be in DB
+    const checkConnection = () => {
+      // Simulate checking connection status (would use localStorage or DB in real app)
+      const connected = localStorage.getItem("googlefit_connected") === "true";
+      setIsConnected(connected);
+      
+      // If not connected and logged in, show the connector
+      if (!connected && user) {
+        setShowConnector(true);
+      }
+    };
     
-    // Show welcome toast on first load
-    const hasVisited = localStorage.getItem('hasVisited');
-    if (!hasVisited) {
-      setTimeout(() => {
-        toast.success('Welcome to Balance Boost Coach!', {
-          description: 'Your personal AI wellness assistant is ready to help you maintain balance.',
-          duration: 5000,
-        });
-        localStorage.setItem('hasVisited', 'true');
-      }, 1000);
-    }
-  }, []);
-  
-  if (!mounted) return null;
-  
-  const handleCompleteBreak = () => {
-    toast.success('Great job!', {
-      description: 'Your mindfulness break has been recorded.',
-    });
+    checkConnection();
+  }, [user]);
+
+  const handleConnectGoogleFit = () => {
+    // In a real app, this would verify the connection status with the backend
+    localStorage.setItem("googlefit_connected", "true");
+    setIsConnected(true);
+    setShowConnector(false);
   };
-  
-  const handleCompleteHydration = () => {
-    toast.success('Staying hydrated!', {
-      description: 'Your hydration reminder has been completed.',
-    });
-  };
-  
-  const handleCompleteStretch = () => {
-    toast.success('Feeling refreshed!', {
-      description: 'Your stretching break has been recorded.',
-    });
-  };
-  
+
   return (
     <PageTransition>
-      <div className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="mb-8 text-center md:text-left">
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h1 className="text-3xl md:text-4xl font-bold">
-              Good afternoon, Alex
-            </h1>
-            <p className="text-gray-500 mt-2">
-              Let's maintain your balance today
+      <div className="container px-4 py-8 max-w-6xl mx-auto">
+        {user ? (
+          <>
+            <div className="flex justify-between items-center mb-8">
+              <motion.h1 
+                className="text-3xl font-bold tracking-tight"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                Welcome, {user.user_metadata?.name || "Friend"}
+              </motion.h1>
+              {!isConnected && (
+                <Button onClick={() => setShowConnector(true)}>
+                  Connect Google Fit
+                </Button>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="md:col-span-2 space-y-6">
+                {isConnected && (
+                  <FitDataDisplay 
+                    fitData={fitData} 
+                    isLoading={isLoading} 
+                    onRefresh={refreshFitData} 
+                  />
+                )}
+                <ActivityCard />
+                <StressChart />
+              </div>
+              <div className="space-y-6">
+                <InsightPanel />
+                <ReminderCard />
+                <HealthConnectCard />
+              </div>
+            </div>
+            
+            <Dialog open={showConnector} onOpenChange={setShowConnector}>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Connect to Google Fit</DialogTitle>
+                  <DialogDescription>
+                    Connect your Google Fit account to track your health and fitness data
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                  <GoogleFitConnector onConnect={handleConnectGoogleFit} />
+                </div>
+              </DialogContent>
+            </Dialog>
+          </>
+        ) : (
+          <div className="text-center py-20">
+            <h1 className="text-3xl font-bold mb-6">Balance Boost Coach</h1>
+            <p className="mb-8 text-muted-foreground max-w-md mx-auto">
+              Track your health, manage stress, and boost your wellness with personalized insights.
             </p>
-          </motion.div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {activityData.map((activity, index) => (
-            <ActivityCard
-              key={index}
-              type={activity.type as any}
-              value={activity.value}
-              unit={activity.unit}
-              description={activity.description}
-            />
-          ))}
-        </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <div className="lg:col-span-2">
-            <StressChart
-              data={stressData}
-              title="Stress Levels"
-              description="Your stress pattern throughout the day"
-            />
+            <div className="flex justify-center gap-4">
+              <Button onClick={() => navigate("/login")}>Sign In</Button>
+              <Button variant="outline" onClick={() => navigate("/register")}>
+                Create Account
+              </Button>
+            </div>
           </div>
-          <div>
-            <InsightPanel insights={insightData} />
-          </div>
-        </div>
-        
-        <div>
-          <motion.h2 
-            className="text-xl font-semibold mb-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            Wellness Reminders
-          </motion.h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <ReminderCard
-              icon={<Coffee size={20} />}
-              title="Take a mindfulness break"
-              description="It's been 2 hours since your last break"
-              color="balance-indigo"
-              buttonText="Complete break"
-              onAction={handleCompleteBreak}
-            />
-            
-            <ReminderCard
-              icon={<Droplets size={20} />}
-              title="Stay hydrated"
-              description="Drink a glass of water now"
-              color="balance-blue"
-              buttonText="I drank water"
-              onAction={handleCompleteHydration}
-            />
-            
-            <ReminderCard
-              icon={<Minimize2 size={20} />}
-              title="Quick stretch"
-              description="Stretch your back and neck for 1 minute"
-              color="balance-green"
-              buttonText="Complete stretch"
-              onAction={handleCompleteStretch}
-            />
-          </div>
-        </div>
+        )}
       </div>
     </PageTransition>
   );
