@@ -29,7 +29,38 @@ export const useUserData = () => {
       try {
         setLoading(true);
         
-        // Query the profiles table for the current user
+        // Check if the profiles table exists and create it if needed
+        try {
+          // First, try to create the profiles table if it doesn't exist
+          const { error: tableError } = await supabase.rpc('create_profiles_if_not_exists');
+          
+          if (tableError && tableError.code !== '42P01') {
+            // If the RPC doesn't exist, we'll create the table directly
+            if (tableError.message.includes('does not exist')) {
+              // Execute raw SQL to create the table
+              await supabase.from('profiles').select('count(*)').limit(1).catch(async () => {
+                // Table doesn't exist, create it
+                const { error: createTableError } = await supabase.query(`
+                  CREATE TABLE IF NOT EXISTS "profiles" (
+                    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+                    name TEXT,
+                    email TEXT,
+                    avatar_url TEXT,
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                  );
+                `);
+                
+                if (createTableError) {
+                  console.error('Error creating profiles table:', createTableError);
+                }
+              });
+            }
+          }
+        } catch (tableInitError) {
+          console.error('Error initializing profiles table:', tableInitError);
+        }
+        
+        // Now try to get the profile
         const { data, error } = await supabase
           .from('profiles')
           .select('*')
@@ -68,7 +99,22 @@ export const useUserData = () => {
         setProfile(data);
       } catch (error: any) {
         console.error('Error fetching profile:', error);
-        toast.error('Failed to load profile data');
+        
+        // If the table doesn't exist, create a profile object locally
+        // This allows the UI to still display something even if the DB isn't ready
+        if (error.code === '42P01' && user) {
+          const fallbackProfile: UserProfile = {
+            id: user.id,
+            name: user.user_metadata?.name || '',
+            email: user.email || '',
+            avatar_url: null,
+            created_at: new Date().toISOString(),
+          };
+          setProfile(fallbackProfile);
+          toast.warning('Using local profile data. Database setup in progress.');
+        } else {
+          toast.error('Failed to load profile data');
+        }
       } finally {
         setLoading(false);
       }
@@ -81,6 +127,24 @@ export const useUserData = () => {
     if (!user) return null;
     
     try {
+      // First check if the profiles table exists
+      try {
+        await supabase.from('profiles').select('count(*)').limit(1);
+      } catch (tableError: any) {
+        // Table doesn't exist, create it
+        if (tableError.code === '42P01') {
+          await supabase.query(`
+            CREATE TABLE IF NOT EXISTS "profiles" (
+              id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+              name TEXT,
+              email TEXT,
+              avatar_url TEXT,
+              created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+          `);
+        }
+      }
+      
       const { data, error } = await supabase
         .from('profiles')
         .update(updates)

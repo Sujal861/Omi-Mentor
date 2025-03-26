@@ -68,6 +68,26 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
+  // Helper function to ensure profiles table exists
+  const ensureProfilesTable = async () => {
+    try {
+      await supabase.from('profiles').select('count(*)').limit(1);
+    } catch (error: any) {
+      if (error.code === '42P01') {
+        // Table doesn't exist, create it
+        await supabase.query(`
+          CREATE TABLE IF NOT EXISTS "profiles" (
+            id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+            name TEXT,
+            email TEXT,
+            avatar_url TEXT,
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+          );
+        `);
+      }
+    }
+  };
+
   // Sign up function
   const signUp = async (email: string, password: string, name: string): Promise<AuthResult> => {
     try {
@@ -85,6 +105,9 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (data.user) {
         // After sign up, ensure we create the profile record
         try {
+          // First ensure the profiles table exists
+          await ensureProfilesTable();
+          
           const newProfile = {
             id: data.user.id,
             name,
