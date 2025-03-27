@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Activity, ChevronRight, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { initGoogleFit, isGoogleFitAuthenticated } from "@/services/googleFitService";
 
 interface GoogleFitConnectorProps {
   onConnect: () => void;
@@ -12,24 +13,24 @@ interface GoogleFitConnectorProps {
 
 export const GoogleFitConnector = ({ onConnect }: GoogleFitConnectorProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(isGoogleFitAuthenticated());
 
   const connectToGoogleFit = async () => {
     try {
       setIsLoading(true);
       
-      // In a real implementation, this would initiate OAuth flow with Google Fit API
-      // For demo purposes, we'll simulate a successful connection after a delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Initiate Google Fit OAuth flow and API initialization
+      const success = await initGoogleFit();
       
-      setIsConnected(true);
-      toast.success("Successfully connected to Google Fit");
-      
-      // Simulate fetching data
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Call the onConnect callback
-      onConnect();
+      if (success) {
+        setIsConnected(true);
+        toast.success("Successfully connected to Google Fit");
+        
+        // Call the onConnect callback to update parent components
+        onConnect();
+      } else {
+        toast.error("Failed to connect to Google Fit");
+      }
       
     } catch (error) {
       console.error("Error connecting to Google Fit:", error);

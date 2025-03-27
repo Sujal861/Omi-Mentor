@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -16,6 +15,7 @@ import { GoogleFitConnector } from "@/components/integration/GoogleFitConnector"
 import { motion } from "framer-motion";
 import { stressData, activityData, insightData } from "@/utils/mockData";
 import { Bell, Clock } from "lucide-react";
+import { isGoogleFitAuthenticated } from "@/services/googleFitService";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -25,11 +25,9 @@ const Index = () => {
   const { fitData, isLoading, refreshFitData } = useFitData(isConnected);
 
   useEffect(() => {
-    // Check if the user is connected to Google Fit (would be stored in a real app)
-    // For demo purposes, we'll keep it in state - in a real app would be in DB
+    // Check if the user is connected to Google Fit using the service
     const checkConnection = () => {
-      // Simulate checking connection status (would use localStorage or DB in real app)
-      const connected = localStorage.getItem("googlefit_connected") === "true";
+      const connected = isGoogleFitAuthenticated();
       setIsConnected(connected);
       
       // If not connected and logged in, show the connector
@@ -42,8 +40,7 @@ const Index = () => {
   }, [user]);
 
   const handleConnectGoogleFit = () => {
-    // In a real app, this would verify the connection status with the backend
-    localStorage.setItem("googlefit_connected", "true");
+    // Update connection status - the actual authentication is handled in the connector
     setIsConnected(true);
     setShowConnector(false);
   };
