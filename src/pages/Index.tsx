@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +16,7 @@ import { GoogleFitConnector } from "@/components/integration/GoogleFitConnector"
 import { motion } from "framer-motion";
 import { stressData, activityData, insightData } from "@/utils/mockData";
 import { Bell, Clock } from "lucide-react";
-import { isGoogleFitAuthenticated } from "@/services/googleFitService";
+import { isGoogleFitAuthenticated, handleAuthRedirect } from "@/services/googleFitService";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -23,9 +24,35 @@ const Index = () => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [showConnector, setShowConnector] = useState<boolean>(false);
   const { fitData, isLoading, refreshFitData } = useFitData(isConnected);
+  const [isProcessingRedirect, setIsProcessingRedirect] = useState<boolean>(false);
 
   useEffect(() => {
-    // Check if the user is connected to Google Fit using the service
+    // Check for OAuth redirect and handle auth code if present
+    const processAuthRedirect = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      
+      if (code) {
+        setIsProcessingRedirect(true);
+        
+        try {
+          const success = await handleAuthRedirect();
+          if (success) {
+            setIsConnected(true);
+            // Clear the URL without refreshing the page
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        } catch (error) {
+          console.error("Error handling auth redirect:", error);
+        } finally {
+          setIsProcessingRedirect(false);
+        }
+      }
+    };
+    
+    processAuthRedirect();
+    
+    // Also check if the user is already connected
     const checkConnection = () => {
       const connected = isGoogleFitAuthenticated();
       setIsConnected(connected);
@@ -44,6 +71,19 @@ const Index = () => {
     setIsConnected(true);
     setShowConnector(false);
   };
+
+  if (isProcessingRedirect) {
+    return (
+      <PageTransition>
+        <div className="container flex items-center justify-center h-screen">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-2">Completing Google Fit connection...</h2>
+            <p className="text-muted-foreground">Please wait while we set up your connection.</p>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
 
   return (
     <PageTransition>
@@ -117,7 +157,7 @@ const Index = () => {
           </>
         ) : (
           <div className="text-center py-20">
-            <h1 className="text-3xl font-bold mb-6">Balance Boost Coach</h1>
+            <h1 className="text-3xl font-bold mb-6">Omni Mentor</h1>
             <p className="mb-8 text-muted-foreground max-w-md mx-auto">
               Track your health, manage stress, and boost your wellness with personalized insights.
             </p>

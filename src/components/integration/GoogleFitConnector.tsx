@@ -1,11 +1,11 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Activity, ChevronRight, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { initGoogleFit, isGoogleFitAuthenticated } from "@/services/googleFitService";
+import { initGoogleFit, isGoogleFitAuthenticated, handleAuthRedirect } from "@/services/googleFitService";
 
 interface GoogleFitConnectorProps {
   onConnect: () => void;
@@ -15,29 +15,43 @@ export const GoogleFitConnector = ({ onConnect }: GoogleFitConnectorProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(isGoogleFitAuthenticated());
 
+  useEffect(() => {
+    // Check for OAuth redirect response when component mounts
+    const handleRedirectIfNeeded = async () => {
+      // If URL has a 'code' parameter, we're returning from OAuth
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      
+      if (code) {
+        setIsLoading(true);
+        const success = await handleAuthRedirect();
+        setIsLoading(false);
+        
+        if (success) {
+          setIsConnected(true);
+          onConnect();
+        }
+      }
+    };
+    
+    handleRedirectIfNeeded();
+  }, [onConnect]);
+
   const connectToGoogleFit = async () => {
     try {
       setIsLoading(true);
       
-      // Initiate Google Fit OAuth flow and API initialization
-      const success = await initGoogleFit();
+      // Initiate Google Fit OAuth flow
+      await initGoogleFit();
       
-      if (success) {
-        setIsConnected(true);
-        toast.success("Successfully connected to Google Fit");
-        
-        // Call the onConnect callback to update parent components
-        onConnect();
-      } else {
-        toast.error("Failed to connect to Google Fit");
-      }
+      // Note: initGoogleFit redirects the user to Google's auth page,
+      // so we won't reach code below until the user returns with a code
       
     } catch (error) {
       console.error("Error connecting to Google Fit:", error);
       toast.error("Failed to connect to Google Fit", {
         description: "Please try again later",
       });
-    } finally {
       setIsLoading(false);
     }
   };
@@ -110,7 +124,7 @@ export const GoogleFitConnector = ({ onConnect }: GoogleFitConnectorProps) => {
       </Card>
       
       <p className="text-xs text-muted-foreground text-center max-w-sm">
-        By connecting your Google Fit account, you allow Balance Boost Coach to access your fitness data to provide personalized insights.
+        By connecting your Google Fit account, you allow Omni Mentor to access your fitness data to provide personalized insights.
       </p>
     </div>
   );

@@ -29,19 +29,23 @@ export const useFitData = (isConnected: boolean = false) => {
   const [fitData, setFitData] = useState<FitnessData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
+
+  // Check connection status regardless of what's passed in
+  const realConnectionStatus = isConnected || isGoogleFitAuthenticated();
 
   useEffect(() => {
     // Only fetch data if connected
-    if (!isConnected) return;
+    if (!realConnectionStatus) return;
     
     const fetchFitData = async () => {
       setIsLoading(true);
       setError(null);
       
       try {
-        // Use the real Google Fit service to fetch data
         const data = await fetchFitnessData();
         setFitData(data);
+        setLastRefreshed(new Date());
         
       } catch (err: any) {
         console.error('Error fetching fitness data:', err);
@@ -62,11 +66,11 @@ export const useFitData = (isConnected: boolean = false) => {
     }, 5 * 60 * 1000);
     
     return () => clearInterval(intervalId);
-  }, [isConnected]);
+  }, [realConnectionStatus]);
   
   // Function to manually refresh data
   const refreshFitData = async () => {
-    if (!isConnected) {
+    if (!realConnectionStatus) {
       toast.error('Not connected to Google Fit');
       return;
     }
@@ -75,9 +79,9 @@ export const useFitData = (isConnected: boolean = false) => {
     setError(null);
     
     try {
-      // Use the real Google Fit service
       const data = await fetchFitnessData();
       setFitData(data);
+      setLastRefreshed(new Date());
       
       toast.success('Fitness data updated');
     } catch (err: any) {
@@ -93,6 +97,7 @@ export const useFitData = (isConnected: boolean = false) => {
     fitData,
     isLoading,
     error,
+    lastRefreshed,
     refreshFitData,
   };
 };
