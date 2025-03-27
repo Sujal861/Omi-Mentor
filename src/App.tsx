@@ -13,7 +13,6 @@ import Profile from "./pages/Profile";
 import Navbar from "./components/layout/Navbar";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import React from "react";
 
 const queryClient = new QueryClient();
 
@@ -22,9 +21,7 @@ const App = () => (
     <SupabaseProvider>
       <BrowserRouter>
         <TooltipProvider>
-          <Toaster />
-          <Sonner position="top-right" expand={true} closeButton={true} richColors={true} />
-          <div className="min-h-screen">
+          <div className="min-h-screen bg-white text-gray-700">
             <Navbar />
             <AnimatePresence mode="wait">
               <Routes>
@@ -34,10 +31,11 @@ const App = () => (
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="*" element={<NotFound />} />
-                {/* Remove the redirect to login so that the dashboard is the main page */}
               </Routes>
             </AnimatePresence>
           </div>
+          <Toaster />
+          <Sonner position="top-right" expand={true} closeButton={true} richColors={true} />
         </TooltipProvider>
       </BrowserRouter>
     </SupabaseProvider>

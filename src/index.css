@@ -6,32 +6,32 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 220 13% 28%;
+    --foreground: 240 10% 25%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 28%;
+    --card-foreground: 240 10% 25%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 28%;
+    --popover-foreground: 240 10% 25%;
 
-    --primary: 210 100% 50%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 14% 96%;
-    --secondary-foreground: 220 13% 28%;
+    --secondary-foreground: 240 10% 25%;
 
     --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted-foreground: 240 10% 40%;
 
     --accent: 220 14% 96%;
-    --accent-foreground: 220 13% 28%;
+    --accent-foreground: 240 10% 25%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 210 100% 50%;
+    --ring: 217 91% 60%;
 
     --radius: 0.75rem;
 
@@ -40,33 +40,33 @@
   }
 
   .dark {
-    --background: 220 13% 18%;
+    --background: 240 10% 8%;
     --foreground: 0 0% 95%;
 
-    --card: 220 13% 18%;
+    --card: 240 10% 8%;
     --card-foreground: 0 0% 95%;
 
-    --popover: 220 13% 18%;
+    --popover: 240 10% 8%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 210 100% 50%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 220 13% 25%;
+    --secondary: 240 10% 15%;
     --secondary-foreground: 0 0% 95%;
 
-    --muted: 220 13% 25%;
-    --muted-foreground: 220 9% 70%;
+    --muted: 240 10% 15%;
+    --muted-foreground: 240 5% 70%;
 
-    --accent: 220 13% 25%;
+    --accent: 240 10% 15%;
     --accent-foreground: 0 0% 95%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 95%;
 
-    --border: 220 13% 25%;
-    --input: 220 13% 25%;
-    --ring: 210 100% 60%;
+    --border: 240 10% 15%;
+    --input: 240 10% 15%;
+    --ring: 217 91% 60%;
   }
 }
 
@@ -80,7 +80,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-medium tracking-tight text-gray-600 dark:text-gray-300;
+    @apply font-medium tracking-tight text-gray-700 dark:text-gray-300;
   }
 
   /* Custom scrollbar */
@@ -102,6 +102,19 @@
 }
 
 @layer components {
+  /* Omi-inspired components */
+  .omi-card {
+    @apply bg-white shadow-md border border-gray-100 rounded-xl transition-all duration-300;
+  }
+  
+  .omi-button {
+    @apply rounded-full font-medium transition-all duration-300 hover:shadow-md;
+  }
+  
+  .omi-input {
+    @apply bg-white border border-gray-200 rounded-full px-4 py-2 focus:ring-2 focus:ring-primary/30 focus:border-primary/30;
+  }
+
   .glass-card {
     @apply bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/30 shadow-soft;
   }
@@ -118,6 +131,7 @@
     @apply transition-all duration-300 hover:shadow-md hover:-translate-y-1;
   }
 
+  /* Omi-inspired clickable elements */
   .clickable {
     @apply relative overflow-hidden transition-all duration-200 hover:brightness-105 active:brightness-95 active:scale-[0.98];
   }
@@ -140,18 +154,9 @@
     @apply bg-gray-800;
   }
   
-  /* Health card animations */
-  .health-icon {
-    @apply transition-all duration-300 transform;
-  }
-  
-  .health-icon:hover {
-    @apply scale-110;
-  }
-
-  /* Silver accent styles */
+  /* Silver accent styles - Omi.me inspired */
   .silver-gradient {
-    @apply bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800;
+    @apply bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700;
   }
   
   .silver-text {
@@ -159,10 +164,62 @@
   }
   
   .silver-border {
-    @apply border border-gray-300 dark:border-gray-700;
+    @apply border border-gray-200 dark:border-gray-700;
   }
   
   .silver-shadow {
-    @apply shadow-md shadow-gray-200/50 dark:shadow-gray-900/30;
+    @apply shadow-md shadow-gray-100/50 dark:shadow-gray-900/30;
+  }
+  
+  /* Login animations */
+  .login-appear {
+    @apply opacity-0 translate-y-4;
+    animation: loginAppear 0.5s ease forwards;
+  }
+  
+  .login-field {
+    @apply opacity-0;
+    animation: loginField 0.3s ease forwards;
+  }
+  
+  .login-field:nth-child(1) { animation-delay: 0.1s; }
+  .login-field:nth-child(2) { animation-delay: 0.2s; }
+  .login-field:nth-child(3) { animation-delay: 0.3s; }
+  .login-field:nth-child(4) { animation-delay: 0.4s; }
+  
+  @keyframes loginAppear {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes loginField {
+    to {
+      opacity: 1;
+    }
+  }
+  
+  /* Omi.me inspired animations */
+  .omi-fade-in {
+    opacity: 0;
+    animation: omiFadeIn 0.6s ease forwards;
+  }
+  
+  .omi-slide-up {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: omiSlideUp 0.6s ease forwards;
+  }
+  
+  @keyframes omiFadeIn {
+    to { opacity: 1; }
+  }
+  
+  @keyframes omiSlideUp {
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
