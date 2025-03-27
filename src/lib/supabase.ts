@@ -8,38 +8,43 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 // Create a single supabase client for the entire app
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Create an RPC function for creating the profiles table if it doesn't exist
-// This will work only if the RPC exists on the Supabase project
+// Note: We removed the RPC function call that was causing errors
+
+// Check if profiles table exists and create it if needed
 const initProfilesTable = async () => {
   try {
-    const { error } = await supabase.rpc('create_profiles_table', {});
-    if (error) {
-      console.log('Setting up RPC function for profile table creation...');
-      console.error('RPC Error:', error.message);
+    // Check if profiles table exists
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id')
+      .limit(1);
+    
+    if (error && error.code === '42P01') {
+      // Table doesn't exist, create it
+      console.log('Creating profiles table...');
+      const createTableSQL = `
+        create table if not exists profiles (
+          id uuid primary key references auth.users(id) on delete cascade,
+          name text,
+          email text,
+          avatar_url text,
+          created_at timestamp with time zone default current_timestamp
+        );
+      `;
+      
+      await supabase.rpc('exec_sql', { sql: createTableSQL }).catch(err => {
+        console.error('Failed to create profiles table:', err);
+      });
     }
   } catch (err) {
-    console.error('Failed to call RPC function:', err);
+    console.error('Failed to initialize profiles table:', err);
   }
 };
 
-// Call the initialization function
-initProfilesTable();
-
-// Create this function in your Supabase SQL editor:
-/*
-create or replace function create_profiles_table()
-returns void as $$
-begin
-  create table if not exists profiles (
-    id uuid primary key references auth.users(id) on delete cascade,
-    name text,
-    email text,
-    avatar_url text,
-    created_at timestamp with time zone default current_timestamp
-  );
-end;
-$$ language plpgsql;
-*/
+// Only try to initialize in the browser environment
+if (typeof window !== 'undefined') {
+  initProfilesTable();
+}
 
 // Set up auth redirects globally
 supabase.auth.onAuthStateChange((event, session) => {
