@@ -45,16 +45,41 @@ const Navbar = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
+              {/* Animated 3D-style logo */}
               <motion.div 
-                className="w-8 h-8 rounded-full bg-gradient-to-tr from-balance-blue to-balance-indigo flex items-center justify-center"
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 2, repeat: Infinity, repeatType: 'reverse' }}
+                className="relative w-10 h-10 rounded-lg bg-gradient-to-tr from-indigo-600 to-purple-500 flex items-center justify-center overflow-hidden"
+                initial={{ rotateY: 0 }}
+                animate={{ 
+                  rotateY: 360,
+                  scale: [1, 1.1, 1],
+                  boxShadow: [
+                    "0 4px 12px rgba(79, 70, 229, 0.2)",
+                    "0 8px 24px rgba(79, 70, 229, 0.4)",
+                    "0 4px 12px rgba(79, 70, 229, 0.2)"
+                  ]
+                }}
+                transition={{ 
+                  rotateY: { duration: 3, repeat: Infinity, ease: "linear" },
+                  scale: { duration: 2, repeat: Infinity, repeatType: "reverse" },
+                  boxShadow: { duration: 2, repeat: Infinity, repeatType: "reverse" }
+                }}
               >
-                <div className="w-3 h-3 bg-white rounded-full" />
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-to-br from-indigo-300/30 to-transparent"
+                  animate={{ 
+                    rotate: [0, 45, 0],
+                    opacity: [0.7, 1, 0.7]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
+                />
+                <span className="text-white font-bold text-lg">OM</span>
               </motion.div>
-              <span className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-balance-blue to-balance-indigo">
-                Omni Mentor
-              </span>
+              <div className="flex flex-col">
+                <span className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-500">
+                  Omi Mentor
+                </span>
+                <span className="text-xs text-gray-500 -mt-1">Your Wellness Guide</span>
+              </div>
             </Link>
           </div>
 
@@ -69,7 +94,7 @@ const Navbar = () => {
                   className={cn(
                     'relative flex items-center space-x-1 px-1 py-2 text-sm font-medium transition-colors',
                     isActive 
-                      ? 'text-balance-indigo' 
+                      ? 'text-indigo-600 dark:text-indigo-400' 
                       : 'text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white'
                   )}
                 >
@@ -77,7 +102,7 @@ const Navbar = () => {
                   <span>{item.name}</span>
                   {isActive && (
                     <motion.div 
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-balance-indigo rounded-full"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-indigo-600 dark:bg-indigo-400 rounded-full"
                       layoutId="navbar-indicator"
                       transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                     />
@@ -93,7 +118,7 @@ const Navbar = () => {
             >
               <span className="sr-only">View notifications</span>
               <Bell size={20} />
-              <span className="absolute top-1 right-1 block w-2 h-2 rounded-full bg-balance-red ring-2 ring-white"></span>
+              <span className="absolute top-1 right-1 block w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
             </button>
             
             <div className="ml-4 md:hidden">
@@ -129,7 +154,7 @@ const Navbar = () => {
                 className={cn(
                   'flex items-center px-3 py-2 rounded-md text-base font-medium transition-colors',
                   isActive
-                    ? 'bg-indigo-50 text-balance-indigo dark:bg-gray-800 dark:text-balance-blue'
+                    ? 'bg-indigo-50 text-indigo-600 dark:bg-gray-800 dark:text-indigo-400'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'
                 )}
               >

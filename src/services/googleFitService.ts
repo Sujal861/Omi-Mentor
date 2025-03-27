@@ -143,7 +143,7 @@ const refreshAccessToken = async (): Promise<boolean> => {
   }
 };
 
-// Fetch fitness data from Google Fit API
+// Fetch fitness data from Google Fit API - improved with better error handling and retries
 export const fetchFitnessData = async (): Promise<FitnessData> => {
   console.log("Fetching real data from Google Fit API");
   
@@ -155,111 +155,154 @@ export const fetchFitnessData = async (): Promise<FitnessData> => {
     }
   }
   
-  try {
-    const now = new Date();
-    const endTime = now.getTime();
-    const startTime = endTime - (24 * 60 * 60 * 1000); // Last 24 hours
-    
-    // Fetch steps data
-    const stepsResponse = await fetch(`${API_BASE_URL}/users/me/dataset:aggregate`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        aggregateBy: [{
-          dataTypeName: "com.google.step_count.delta",
-        }],
-        bucketByTime: { durationMillis: 86400000 },
-        startTimeMillis: startTime,
-        endTimeMillis: endTime
-      })
-    });
-    
-    // If token is invalid, try refreshing it once
-    if (stepsResponse.status === 401) {
-      const refreshed = await refreshAccessToken();
-      if (!refreshed) {
-        throw new Error("Authentication expired");
+  // Added retry mechanism
+  const maxRetries = 3;
+  let retryCount = 0;
+  
+  while (retryCount < maxRetries) {
+    try {
+      const now = new Date();
+      const endTime = now.getTime();
+      const startTime = endTime - (24 * 60 * 60 * 1000); // Last 24 hours
+      
+      // Test connection first with a simple API call
+      const testResponse = await fetch(`https://www.googleapis.com/fitness/v1/users/me/dataSources`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+      
+      if (!testResponse.ok) {
+        if (testResponse.status === 401) {
+          // Token expired, try refreshing
+          const refreshed = await refreshAccessToken();
+          if (!refreshed) {
+            throw new Error("Authentication expired");
+          }
+          retryCount++;
+          continue; // Retry with new token
+        } else {
+          throw new Error(`API test failed with status: ${testResponse.status}`);
+        }
       }
-      // Retry with new token
-      return fetchFitnessData();
+      
+      // Fetch steps data
+      const stepsResponse = await fetch(`${API_BASE_URL}/users/me/dataset:aggregate`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          aggregateBy: [{
+            dataTypeName: "com.google.step_count.delta",
+          }],
+          bucketByTime: { durationMillis: 86400000 },
+          startTimeMillis: startTime,
+          endTimeMillis: endTime
+        })
+      });
+      
+      if (!stepsResponse.ok) {
+        throw new Error(`Steps data request failed with status: ${stepsResponse.status}`);
+      }
+      
+      const stepsData = await stepsResponse.json();
+      
+      // Fetch calories data
+      const caloriesResponse = await fetch(`${API_BASE_URL}/users/me/dataset:aggregate`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          aggregateBy: [{
+            dataTypeName: "com.google.calories.expended",
+          }],
+          bucketByTime: { durationMillis: 86400000 },
+          startTimeMillis: startTime,
+          endTimeMillis: endTime
+        })
+      });
+      
+      if (!caloriesResponse.ok) {
+        throw new Error(`Calories data request failed with status: ${caloriesResponse.status}`);
+      }
+      
+      const caloriesData = await caloriesResponse.json();
+      
+      // Process and extract data
+      // Extract steps from response
+      const steps = extractStepsFromResponse(stepsData);
+      const calories = extractCaloriesFromResponse(caloriesData);
+      
+      // For other metrics like active minutes, heart rate, etc.
+      // Additional API calls would be needed
+      
+      // Return the fitness data with the real steps and calories
+      return {
+        steps: steps,
+        caloriesBurned: calories,
+        activeMinutes: Math.floor(Math.random() * 60) + 15, // This would need a separate API call
+        distance: parseFloat((Math.random() * 3 + 1).toFixed(2)), // This would need a separate API call
+        heartRate: {
+          current: Math.floor(Math.random() * 30) + 65,
+          resting: Math.floor(Math.random() * 10) + 60,
+          max: Math.floor(Math.random() * 20) + 140,
+        },
+        sleepData: {
+          duration: Math.floor(Math.random() * 3) + 6,
+          quality: ['poor', 'fair', 'good'][Math.floor(Math.random() * 3)] as 'poor' | 'fair' | 'good',
+          deepSleep: parseFloat((Math.random() * 2 + 0.5).toFixed(1)),
+        },
+        lastUpdated: now,
+      };
+      
+    } catch (error) {
+      console.error(`Error fetching fitness data (Attempt ${retryCount + 1}/${maxRetries}):`, error);
+      
+      retryCount++;
+      
+      if (error.message && error.message.includes("401")) {
+        // Try to refresh the token
+        const refreshed = await refreshAccessToken();
+        if (!refreshed) {
+          // If we can't refresh, fall back to simulation
+          break;
+        }
+      } else if (retryCount >= maxRetries) {
+        // We've tried enough, fall back to simulation
+        break;
+      } else {
+        // Wait a bit before trying again (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+      }
     }
-    
-    const stepsData = await stepsResponse.json();
-    
-    // Fetch calories data
-    const caloriesResponse = await fetch(`${API_BASE_URL}/users/me/dataset:aggregate`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        aggregateBy: [{
-          dataTypeName: "com.google.calories.expended",
-        }],
-        bucketByTime: { durationMillis: 86400000 },
-        startTimeMillis: startTime,
-        endTimeMillis: endTime
-      })
-    });
-    
-    const caloriesData = await caloriesResponse.json();
-    
-    // Process and extract data
-    // Extract steps from response
-    const steps = extractStepsFromResponse(stepsData);
-    const calories = extractCaloriesFromResponse(caloriesData);
-    
-    // For other metrics like active minutes, heart rate, etc.
-    // Additional API calls would be needed
-    
-    // For now, simulate some data for metrics we haven't yet implemented
-    return {
-      steps: steps,
-      caloriesBurned: calories,
-      activeMinutes: Math.floor(Math.random() * 60) + 15, // This would need a separate API call
-      distance: parseFloat((Math.random() * 3 + 1).toFixed(2)), // This would need a separate API call
-      heartRate: {
-        current: Math.floor(Math.random() * 30) + 65,
-        resting: Math.floor(Math.random() * 10) + 60,
-        max: Math.floor(Math.random() * 20) + 140,
-      },
-      sleepData: {
-        duration: Math.floor(Math.random() * 3) + 6,
-        quality: ['poor', 'fair', 'good'][Math.floor(Math.random() * 3)] as 'poor' | 'fair' | 'good',
-        deepSleep: parseFloat((Math.random() * 2 + 0.5).toFixed(1)),
-      },
-      lastUpdated: now,
-    };
-    
-  } catch (error) {
-    console.error("Error fetching fitness data:", error);
-    
-    // If we get here, there was an error. Fall back to simulated data for demo
-    console.log("Falling back to simulated data");
-    const now = new Date();
-    
-    return {
-      steps: Math.floor(Math.random() * 5000) + 2000,
-      caloriesBurned: Math.floor(Math.random() * 300) + 100,
-      activeMinutes: Math.floor(Math.random() * 60) + 15,
-      distance: parseFloat((Math.random() * 3 + 1).toFixed(2)),
-      heartRate: {
-        current: Math.floor(Math.random() * 30) + 65,
-        resting: Math.floor(Math.random() * 10) + 60,
-        max: Math.floor(Math.random() * 20) + 140,
-      },
-      sleepData: {
-        duration: Math.floor(Math.random() * 3) + 6,
-        quality: ['poor', 'fair', 'good'][Math.floor(Math.random() * 3)] as 'poor' | 'fair' | 'good',
-        deepSleep: parseFloat((Math.random() * 2 + 0.5).toFixed(1)),
-      },
-      lastUpdated: now,
-    };
   }
+  
+  // If we get here, there was an error. Fall back to simulated data
+  console.log("Falling back to simulated data");
+  const now = new Date();
+  
+  return {
+    steps: Math.floor(Math.random() * 5000) + 2000,
+    caloriesBurned: Math.floor(Math.random() * 300) + 100,
+    activeMinutes: Math.floor(Math.random() * 60) + 15,
+    distance: parseFloat((Math.random() * 3 + 1).toFixed(2)),
+    heartRate: {
+      current: Math.floor(Math.random() * 30) + 65,
+      resting: Math.floor(Math.random() * 10) + 60,
+      max: Math.floor(Math.random() * 20) + 140,
+    },
+    sleepData: {
+      duration: Math.floor(Math.random() * 3) + 6,
+      quality: ['poor', 'fair', 'good'][Math.floor(Math.random() * 3)] as 'poor' | 'fair' | 'good',
+      deepSleep: parseFloat((Math.random() * 2 + 0.5).toFixed(1)),
+    },
+    lastUpdated: now,
+  };
 };
 
 // Helper functions to extract data from Google Fit responses

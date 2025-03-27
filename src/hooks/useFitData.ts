@@ -30,6 +30,8 @@ export const useFitData = (isConnected: boolean = false) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
+  const [networkRetries, setNetworkRetries] = useState(0);
+  const MAX_RETRIES = 3;
 
   // Check connection status regardless of what's passed in
   const realConnectionStatus = isConnected || isGoogleFitAuthenticated();
@@ -46,12 +48,35 @@ export const useFitData = (isConnected: boolean = false) => {
         const data = await fetchFitnessData();
         setFitData(data);
         setLastRefreshed(new Date());
+        // Reset retries on success
+        setNetworkRetries(0);
         
       } catch (err: any) {
         console.error('Error fetching fitness data:', err);
         setError(err.message || 'Failed to fetch fitness data');
+        
+        // Check if it's a network error
+        if (err.message?.includes('Failed to fetch') || err.message?.includes('NetworkError') || 
+            err.message?.includes('Network request failed') || !navigator.onLine) {
+          
+          // Increment retry counter
+          setNetworkRetries(prev => prev + 1);
+          
+          if (networkRetries < MAX_RETRIES) {
+            toast.error(`Network issue detected. Retrying... (${networkRetries + 1}/${MAX_RETRIES})`, {
+              description: 'Please check your internet connection',
+              duration: 3000,
+            });
+            
+            // Try again after a delay
+            setTimeout(() => fetchFitData(), 2000);
+            return;
+          }
+        }
+        
         toast.error('Could not load fitness data', {
-          description: 'Please check your connection and try again',
+          description: 'Please check your internet connection and try again',
+          duration: 5000,
         });
       } finally {
         setIsLoading(false);
@@ -66,7 +91,7 @@ export const useFitData = (isConnected: boolean = false) => {
     }, 5 * 60 * 1000);
     
     return () => clearInterval(intervalId);
-  }, [realConnectionStatus]);
+  }, [realConnectionStatus, networkRetries]);
   
   // Function to manually refresh data
   const refreshFitData = async () => {
@@ -82,12 +107,23 @@ export const useFitData = (isConnected: boolean = false) => {
       const data = await fetchFitnessData();
       setFitData(data);
       setLastRefreshed(new Date());
+      // Reset retries on success
+      setNetworkRetries(0);
       
       toast.success('Fitness data updated');
     } catch (err: any) {
       console.error('Error refreshing fitness data:', err);
       setError(err.message || 'Failed to refresh fitness data');
-      toast.error('Could not update fitness data');
+      
+      // Check if it's a network error
+      if (err.message?.includes('Failed to fetch') || err.message?.includes('NetworkError') || 
+          err.message?.includes('Network request failed') || !navigator.onLine) {
+        toast.error('Network error', {
+          description: 'Please check your internet connection and try again',
+        });
+      } else {
+        toast.error('Could not update fitness data');
+      }
     } finally {
       setIsLoading(false);
     }
