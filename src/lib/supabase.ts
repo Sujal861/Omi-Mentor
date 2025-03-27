@@ -32,9 +32,12 @@ const initProfilesTable = async () => {
         );
       `;
       
-      await supabase.rpc('exec_sql', { sql: createTableSQL }).catch(err => {
+      // Fix: Remove the catch method and use try/catch instead
+      try {
+        await supabase.rpc('exec_sql', { sql: createTableSQL });
+      } catch (err) {
         console.error('Failed to create profiles table:', err);
-      });
+      }
     }
   } catch (err) {
     console.error('Failed to initialize profiles table:', err);
@@ -52,3 +55,44 @@ supabase.auth.onAuthStateChange((event, session) => {
     // Handle auth state changes if needed
   }
 });
+
+// Create a function to initialize the notifications table
+export const initNotificationsTable = async () => {
+  try {
+    // Check if notifications table exists
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('count')
+      .limit(1);
+    
+    if (error && error.code === '42P01') {
+      // Table doesn't exist, create it
+      console.log('Creating notifications table...');
+      const createTableSQL = `
+        create table if not exists notifications (
+          id uuid primary key default uuid_generate_v4(),
+          user_id uuid references auth.users(id) on delete cascade,
+          title text not null,
+          message text not null,
+          read boolean default false,
+          created_at timestamp with time zone default current_timestamp,
+          type text not null
+        );
+      `;
+      
+      try {
+        await supabase.rpc('exec_sql', { sql: createTableSQL });
+        console.log('Notifications table created successfully');
+      } catch (err) {
+        console.error('Failed to create notifications table:', err);
+      }
+    }
+  } catch (err) {
+    console.error('Failed to initialize notifications table:', err);
+  }
+};
+
+// Initialize notifications table in browser environment
+if (typeof window !== 'undefined') {
+  initNotificationsTable();
+}
