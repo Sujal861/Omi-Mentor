@@ -69,13 +69,17 @@ export const ThreeDCard = ({
       className={`relative perspective-1000 ${className}`}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={() => {
+        setHovered(false);
+        mouseX.set(0.5);
+        mouseY.set(0.5);
+      }}
       style={{
         transformStyle: "preserve-3d",
       }}
       animate={{
-        rotateX: hovered ? rotateX : 0,
-        rotateY: hovered ? rotateY : 0,
+        rotateX: hovered ? rotateX.get() : 0,
+        rotateY: hovered ? rotateY.get() : 0,
         boxShadow: hovered 
           ? `
               0 5px 15px rgba(0,0,0,${shadowIntensity * 0.15}), 
@@ -86,6 +90,13 @@ export const ThreeDCard = ({
               0 0 0 rgba(0,0,0,0)
             `,
         transition: { duration: 0.2 }
+      }}
+      whileHover={{
+        transition: {
+          type: "spring",
+          damping: damping,
+          stiffness: stiffness,
+        },
       }}
     >
       <motion.div
