@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
@@ -13,14 +12,11 @@ const Navbar = () => {
   const location = useLocation();
   const logoRef = useRef<HTMLDivElement>(null);
   
-  // Motion values for cursor tracking
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
   
-  // Spring configs for smoother animation
   const springConfig = { damping: 25, stiffness: 150 };
   
-  // Create springs for X and Y rotation
   const rotateX = useSpring(
     useTransform(mouseY, [0, 1], [15, -15]), 
     springConfig
@@ -50,7 +46,6 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Handle mouse move for logo 3D effect
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!logoRef.current) return;
     
@@ -58,7 +53,6 @@ const Navbar = () => {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     
-    // Calculate normalized position (0 to 1)
     const normalizedX = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
     const normalizedY = Math.min(Math.max((e.clientY - rect.top) / rect.height, 0), 1);
     
@@ -66,13 +60,11 @@ const Navbar = () => {
     mouseY.set(normalizedY);
   };
   
-  // Reset position when mouse leaves
   const handleMouseLeave = () => {
     mouseX.set(0.5);
     mouseY.set(0.5);
   };
 
-  // Close mobile menu when changing routes
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
@@ -107,7 +99,6 @@ const Navbar = () => {
                     rotationIntensity={15}
                     shadowIntensity={0.8}
                   >
-                    {/* 3D Logo with silver and white colors */}
                     <motion.div 
                       className="relative w-full h-full rounded-lg bg-gradient-to-tr from-silver-300 to-silver-500 flex items-center justify-center overflow-hidden"
                       initial={{ rotateY: 0 }}
@@ -146,7 +137,6 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
@@ -191,7 +181,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
       <motion.div 
         className={cn(
           "md:hidden overflow-hidden",

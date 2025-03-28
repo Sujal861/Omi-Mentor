@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -27,7 +26,6 @@ const Index = () => {
   const [isProcessingRedirect, setIsProcessingRedirect] = useState<boolean>(false);
 
   useEffect(() => {
-    // Check for OAuth redirect and handle auth code if present
     const processAuthRedirect = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
@@ -39,7 +37,6 @@ const Index = () => {
           const success = await handleAuthRedirect();
           if (success) {
             setIsConnected(true);
-            // Clear the URL without refreshing the page
             window.history.replaceState({}, document.title, window.location.pathname);
           }
         } catch (error) {
@@ -52,12 +49,10 @@ const Index = () => {
     
     processAuthRedirect();
     
-    // Also check if the user is already connected
     const checkConnection = () => {
       const connected = isGoogleFitAuthenticated();
       setIsConnected(connected);
       
-      // If not connected and logged in, show the connector
       if (!connected && user) {
         setShowConnector(true);
       }
@@ -67,7 +62,6 @@ const Index = () => {
   }, [user]);
 
   const handleConnectGoogleFit = () => {
-    // Update connection status - the actual authentication is handled in the connector
     setIsConnected(true);
     setShowConnector(false);
   };
@@ -223,7 +217,7 @@ const Index = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                <h1 className="text-4xl font-bold mb-6 text-gray-700">Omni Mentor</h1>
+                <h1 className="text-4xl font-bold mb-6 text-gray-700">Omi Mentor</h1>
                 <p className="mb-8 text-gray-500 max-w-md mx-auto">
                   Track your health, manage stress, and boost your wellness with personalized insights.
                 </p>
