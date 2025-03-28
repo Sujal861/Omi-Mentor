@@ -33,6 +33,14 @@
     --ring: 0 0% 62%;
 
     --radius: 0.75rem;
+
+    /* Sidebar variables */
+    --sidebar: 0 0% 97%;
+    --sidebar-foreground: 0 0% 25%;
+    --sidebar-border: 0 0% 85%;
+    --sidebar-accent: 0 0% 90%;
+    --sidebar-accent-foreground: 0 0% 30%;
+    --sidebar-ring: 0 0% 75%;
   }
 
   .dark {
@@ -63,6 +71,14 @@
     --border: 0 0% 25%;
     --input: 0 0% 25%;
     --ring: 0 0% 62%;
+
+    /* Sidebar dark theme variables */
+    --sidebar: 0 0% 15%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-border: 0 0% 30%;
+    --sidebar-accent: 0 0% 25%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-ring: 0 0% 50%;
   }
 }
 

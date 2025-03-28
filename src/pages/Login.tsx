@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { z } from "zod";
@@ -109,12 +108,10 @@ const Login = () => {
   };
 
   const handleGoogleFitConnect = () => {
-    // Close the dialog and navigate to dashboard
+    // Close the dialog and navigate to home page
     setShowGoogleFitDialog(false);
-    // Navigate directly to the dashboard
+    // Navigate directly to the home page
     navigate("/");
-    // Force a full reload to ensure the dashboard loads properly
-    window.location.href = "/";
   };
 
   return (
