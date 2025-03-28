@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Activity, BarChart3, Menu, User, X, Circle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NotificationsPopover } from '@/components/notifications/NotificationsPopover';
@@ -11,6 +11,25 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const logoRef = useRef<HTMLDivElement>(null);
+  
+  // Motion values for cursor tracking
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+  
+  // Spring configs for smoother animation
+  const springConfig = { damping: 25, stiffness: 150 };
+  
+  // Create springs for X and Y rotation
+  const rotateX = useSpring(
+    useTransform(mouseY, [0, 1], [15, -15]), 
+    springConfig
+  );
+  
+  const rotateY = useSpring(
+    useTransform(mouseX, [0, 1], [-15, 15]), 
+    springConfig
+  );
   
   const navItems = [
     { name: 'Dashboard', path: '/', icon: Activity },
@@ -31,6 +50,28 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Handle mouse move for logo 3D effect
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!logoRef.current) return;
+    
+    const rect = logoRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    // Calculate normalized position (0 to 1)
+    const normalizedX = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
+    const normalizedY = Math.min(Math.max((e.clientY - rect.top) / rect.height, 0), 1);
+    
+    mouseX.set(normalizedX);
+    mouseY.set(normalizedY);
+  };
+  
+  // Reset position when mouse leaves
+  const handleMouseLeave = () => {
+    mouseX.set(0.5);
+    mouseY.set(0.5);
+  };
+
   // Close mobile menu when changing routes
   useEffect(() => {
     setIsOpen(false);
@@ -47,39 +88,55 @@ const Navbar = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <ThreeDCard 
-                className="w-12 h-12 rounded-xl overflow-hidden" 
-                rotationIntensity={15}
-                shadowIntensity={0.8}
+              <div 
+                ref={logoRef}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                className="w-12 h-12 perspective-1000"
               >
-                {/* Updated 3D Logo with silver and white colors */}
-                <motion.div 
-                  className="relative w-full h-full rounded-lg bg-gradient-to-tr from-silver-300 to-silver-500 flex items-center justify-center overflow-hidden"
-                  initial={{ rotateY: 0 }}
-                  animate={{ 
-                    scale: [1, 1.05, 1],
-                    boxShadow: [
-                      "0 4px 12px rgba(159, 158, 161, 0.2)",
-                      "0 8px 24px rgba(159, 158, 161, 0.4)",
-                      "0 4px 12px rgba(159, 158, 161, 0.2)"
-                    ]
-                  }}
-                  transition={{ 
-                    scale: { duration: 2, repeat: Infinity, repeatType: "reverse" },
-                    boxShadow: { duration: 2, repeat: Infinity, repeatType: "reverse" }
+                <motion.div
+                  className="w-full h-full"
+                  style={{
+                    rotateX: rotateX,
+                    rotateY: rotateY,
+                    transformStyle: "preserve-3d"
                   }}
                 >
-                  <motion.div 
-                    className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent"
-                    animate={{ 
-                      rotate: [0, 45, 0],
-                      opacity: [0.7, 1, 0.7]
-                    }}
-                    transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
-                  />
-                  <Circle className="text-white w-6 h-6 fill-white/20 stroke-white relative z-10" />
+                  <ThreeDCard 
+                    className="w-12 h-12 rounded-xl overflow-hidden" 
+                    rotationIntensity={15}
+                    shadowIntensity={0.8}
+                  >
+                    {/* 3D Logo with silver and white colors */}
+                    <motion.div 
+                      className="relative w-full h-full rounded-lg bg-gradient-to-tr from-silver-300 to-silver-500 flex items-center justify-center overflow-hidden"
+                      initial={{ rotateY: 0 }}
+                      animate={{ 
+                        scale: [1, 1.05, 1],
+                        boxShadow: [
+                          "0 4px 12px rgba(159, 158, 161, 0.2)",
+                          "0 8px 24px rgba(159, 158, 161, 0.4)",
+                          "0 4px 12px rgba(159, 158, 161, 0.2)"
+                        ]
+                      }}
+                      transition={{ 
+                        scale: { duration: 2, repeat: Infinity, repeatType: "reverse" },
+                        boxShadow: { duration: 2, repeat: Infinity, repeatType: "reverse" }
+                      }}
+                    >
+                      <motion.div 
+                        className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent"
+                        animate={{ 
+                          rotate: [0, 45, 0],
+                          opacity: [0.7, 1, 0.7]
+                        }}
+                        transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
+                      />
+                      <Circle className="text-white w-6 h-6 fill-white/20 stroke-white relative z-10" />
+                    </motion.div>
+                  </ThreeDCard>
                 </motion.div>
-              </ThreeDCard>
+              </div>
               <div className="flex flex-col">
                 <span className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-silver-500 to-silver-700 dark:from-silver-300 dark:to-silver-500">
                   Omi Mentor
