@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Activity, BarChart3, Menu, User, X } from 'lucide-react';
+import { Activity, BarChart3, Menu, User, X, Circle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NotificationsPopover } from '@/components/notifications/NotificationsPopover';
 import ThreeDCard from '@/components/ui/3d-card';
@@ -52,16 +52,16 @@ const Navbar = () => {
                 rotationIntensity={15}
                 shadowIntensity={0.8}
               >
-                {/* 3D Logo */}
+                {/* Updated 3D Logo with silver and white colors */}
                 <motion.div 
-                  className="relative w-full h-full rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden"
+                  className="relative w-full h-full rounded-lg bg-gradient-to-tr from-silver-300 to-silver-500 flex items-center justify-center overflow-hidden"
                   initial={{ rotateY: 0 }}
                   animate={{ 
                     scale: [1, 1.05, 1],
                     boxShadow: [
-                      "0 4px 12px rgba(79, 70, 229, 0.2)",
-                      "0 8px 24px rgba(79, 70, 229, 0.4)",
-                      "0 4px 12px rgba(79, 70, 229, 0.2)"
+                      "0 4px 12px rgba(159, 158, 161, 0.2)",
+                      "0 8px 24px rgba(159, 158, 161, 0.4)",
+                      "0 4px 12px rgba(159, 158, 161, 0.2)"
                     ]
                   }}
                   transition={{ 
@@ -70,21 +70,21 @@ const Navbar = () => {
                   }}
                 >
                   <motion.div 
-                    className="absolute inset-0 bg-gradient-to-br from-indigo-300/30 to-transparent"
+                    className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent"
                     animate={{ 
                       rotate: [0, 45, 0],
                       opacity: [0.7, 1, 0.7]
                     }}
                     transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
                   />
-                  <span className="text-white font-bold text-xl relative z-10">OM</span>
+                  <Circle className="text-white w-6 h-6 fill-white/20 stroke-white relative z-10" />
                 </motion.div>
               </ThreeDCard>
               <div className="flex flex-col">
-                <span className="text-xl font-semibold silver-text bg-clip-text text-transparent bg-gradient-to-r from-gray-600 to-gray-500 dark:from-gray-300 dark:to-gray-400">
+                <span className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-silver-500 to-silver-700 dark:from-silver-300 dark:to-silver-500">
                   Omi Mentor
                 </span>
-                <span className="text-xs text-gray-500 -mt-1">Your Wellness Guide</span>
+                <span className="text-xs text-silver-600 dark:text-silver-400 -mt-1">Your Wellness Guide</span>
               </div>
             </Link>
           </div>
