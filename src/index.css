@@ -69,7 +69,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-silver-200; /* Changed from border-border to a defined color */
   }
 
   body {
