@@ -10,6 +10,16 @@ interface SectionTransitionProps {
   rotationIntensity?: number;
 }
 
+// Define proper types for our variants
+interface VariantProps {
+  opacity: number;
+  scale: number;
+  x?: number;
+  y?: number;
+  rotateX?: number;
+  rotateY?: number;
+}
+
 export const SectionTransition = ({
   children,
   direction = 'bottom',
@@ -24,7 +34,10 @@ export const SectionTransition = ({
   const getVariants = () => {
     const distance = 50;
     
-    const variants = {
+    const variants: {
+      initial: VariantProps;
+      animate: VariantProps;
+    } = {
       initial: {
         opacity: 0,
         scale: 0.95,
