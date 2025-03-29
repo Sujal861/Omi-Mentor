@@ -1,6 +1,6 @@
 
 import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, Variant, Variants } from 'framer-motion';
 
 interface SectionTransitionProps {
   children: React.ReactNode;
@@ -8,16 +8,6 @@ interface SectionTransitionProps {
   delay?: number;
   className?: string;
   rotationIntensity?: number;
-}
-
-// Define proper types for our variants
-interface VariantProps {
-  opacity: number;
-  scale: number;
-  x?: number;
-  y?: number;
-  rotateX?: number;
-  rotateY?: number;
 }
 
 export const SectionTransition = ({
@@ -34,46 +24,43 @@ export const SectionTransition = ({
   const getVariants = () => {
     const distance = 50;
     
-    const variants: {
-      initial: VariantProps;
-      animate: VariantProps;
-    } = {
+    const variants: Variants = {
       initial: {
         opacity: 0,
         scale: 0.95,
-      },
+      } as Variant,
       animate: {
         opacity: 1,
         scale: 1,
-      }
+      } as Variant
     };
     
     // Add direction-specific properties
     switch (direction) {
       case 'left':
-        variants.initial.x = -distance;
-        variants.initial.rotateY = rotationIntensity;
-        variants.animate.x = 0;
-        variants.animate.rotateY = 0;
+        (variants.initial as any).x = -distance;
+        (variants.initial as any).rotateY = rotationIntensity;
+        (variants.animate as any).x = 0;
+        (variants.animate as any).rotateY = 0;
         break;
       case 'right':
-        variants.initial.x = distance;
-        variants.initial.rotateY = -rotationIntensity;
-        variants.animate.x = 0;
-        variants.animate.rotateY = 0;
+        (variants.initial as any).x = distance;
+        (variants.initial as any).rotateY = -rotationIntensity;
+        (variants.animate as any).x = 0;
+        (variants.animate as any).rotateY = 0;
         break;
       case 'top':
-        variants.initial.y = -distance;
-        variants.initial.rotateX = -rotationIntensity;
-        variants.animate.y = 0;
-        variants.animate.rotateX = 0;
+        (variants.initial as any).y = -distance;
+        (variants.initial as any).rotateX = -rotationIntensity;
+        (variants.animate as any).y = 0;
+        (variants.animate as any).rotateX = 0;
         break;
       case 'bottom':
       default:
-        variants.initial.y = distance;
-        variants.initial.rotateX = rotationIntensity;
-        variants.animate.y = 0;
-        variants.animate.rotateX = 0;
+        (variants.initial as any).y = distance;
+        (variants.initial as any).rotateX = rotationIntensity;
+        (variants.animate as any).y = 0;
+        (variants.animate as any).rotateX = 0;
         break;
     }
     
