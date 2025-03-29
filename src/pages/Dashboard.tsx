@@ -1,8 +1,6 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import PageTransition from '@/components/layout/PageTransition';
-import { Card } from '@/components/ui/card';
 import { useSupabase } from '@/context/SupabaseContext';
 import ActivityCard from '@/components/dashboard/ActivityCard';
 import StressChart from '@/components/dashboard/StressChart';
@@ -13,14 +11,13 @@ import { FitDataDisplay } from '@/components/dashboard/FitDataDisplay';
 import { Bell } from 'lucide-react';
 import { useFitData } from '@/hooks/useFitData';
 import { stressData, activityData, insightData } from '@/utils/mockData';
-import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { GoogleFitConnector } from '@/components/integration/GoogleFitConnector';
 
 const Dashboard = () => {
   const { user } = useSupabase();
   const [showConnector, setShowConnector] = useState(false);
-  const { fitData, isLoading, refreshFitData } = useFitData(false); // Don't auto-connect
+  const { fitData, isLoading, refreshFitData } = useFitData(false);
 
   const handleConnect = () => {
     setShowConnector(true);
@@ -133,7 +130,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Google Fit Connection Dialog - Only shown when explicitly triggered */}
         <Dialog open={showConnector} onOpenChange={setShowConnector}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>

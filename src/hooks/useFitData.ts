@@ -34,10 +34,11 @@ export const useFitData = (isConnected: boolean = false) => {
   const MAX_RETRIES = 3;
 
   // Check connection status regardless of what's passed in
-  const realConnectionStatus = isConnected || isGoogleFitAuthenticated();
+  // Use strict comparison to ensure we only auto-connect when explicitly set to true
+  const realConnectionStatus = isConnected === true || isGoogleFitAuthenticated();
 
   useEffect(() => {
-    // Only fetch data if connected
+    // Only fetch data if connected AND explicitly allowed to connect
     if (!realConnectionStatus) return;
     
     const fetchFitData = async () => {

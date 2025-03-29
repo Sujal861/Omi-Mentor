@@ -11,8 +11,6 @@ import { toast } from "sonner";
 import { useSupabase } from "@/context/SupabaseContext";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { MailCheck, UserCircle, Mail, Lock } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { GoogleFitConnector } from "@/components/integration/GoogleFitConnector";
 import { motion } from "framer-motion";
 
 const loginSchema = z.object({
@@ -32,7 +30,6 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [showWelcome, setShowWelcome] = useState(false);
   const [username, setUsername] = useState("");
-  const [showGoogleFitDialog, setShowGoogleFitDialog] = useState(false);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -65,13 +62,13 @@ const Login = () => {
       }
       
       toast.success("Login successful");
-      setShowWelcome(true);
       
-      // Show Google Fit connector dialog after 2 seconds
+      // Show welcome message briefly then navigate directly to home
+      setShowWelcome(true);
       setTimeout(() => {
-        setShowWelcome(false);
-        setShowGoogleFitDialog(true);
-      }, 2000);
+        navigate("/");
+      }, 1500);
+      
     } catch (error: any) {
       console.error("Login error:", error);
       toast.error("Login failed", {
@@ -107,13 +104,6 @@ const Login = () => {
     }
   };
 
-  const handleGoogleFitConnect = () => {
-    // Close the dialog and navigate to home page
-    setShowGoogleFitDialog(false);
-    // Navigate directly to the home page
-    navigate("/");
-  };
-
   return (
     <div className="flex justify-center items-center min-h-[80vh] px-4 bg-gradient-to-b from-white to-gray-50">
       {showWelcome ? (
@@ -136,7 +126,7 @@ const Login = () => {
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: "100%" }}
-                transition={{ duration: 2 }}
+                transition={{ duration: 1.5 }}
                 className="h-1 bg-primary rounded-full"
               />
             </CardFooter>
@@ -310,20 +300,6 @@ const Login = () => {
           </Card>
         </motion.div>
       )}
-
-      <Dialog open={showGoogleFitDialog} onOpenChange={setShowGoogleFitDialog}>
-        <DialogContent className="sm:max-w-md bg-white border-gray-100">
-          <DialogHeader>
-            <DialogTitle>Connect to Google Fit</DialogTitle>
-            <DialogDescription>
-              Connect your Google Fit account to track your health and fitness data
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <GoogleFitConnector onConnect={handleGoogleFitConnect} />
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
