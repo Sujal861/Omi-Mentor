@@ -24,12 +24,14 @@ const App = () => (
         <TooltipProvider>
           <div className="min-h-screen bg-white text-gray-700">
             <Routes>
+              {/* Public routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               
-              {/* Protected routes inside Layout */}
+              {/* Protected routes */}
               <Route element={<Layout requireAuth />}>
-                <Route path="/" element={<Home />} />
+                <Route index element={<Navigate to="/home" replace />} />
+                <Route path="/home" element={<Home />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/insights" element={<Insights />} />
                 <Route path="/profile" element={<Profile />} />
