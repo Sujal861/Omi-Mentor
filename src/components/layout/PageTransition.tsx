@@ -9,36 +9,48 @@ interface PageTransitionProps {
 const pageVariants = {
   initial: {
     opacity: 0,
-    y: 10,
+    rotateX: 10,
+    scale: 0.95,
+    z: -100,
   },
   in: {
     opacity: 1,
-    y: 0,
+    rotateX: 0,
+    scale: 1,
+    z: 0,
   },
   out: {
     opacity: 0,
-    y: -10,
+    rotateX: -10,
+    scale: 0.95,
+    z: -100,
   },
 };
 
 const pageTransition = {
-  type: 'tween',
-  ease: 'anticipate',
-  duration: 0.5,
+  type: 'spring',
+  damping: 20,
+  stiffness: 100,
+  duration: 0.6,
 };
 
 const PageTransition = ({ children }: PageTransitionProps) => {
   return (
-    <motion.div
-      initial="initial"
-      animate="in"
-      exit="out"
-      variants={pageVariants}
-      transition={pageTransition}
-      className="w-full h-full"
-    >
-      {children}
-    </motion.div>
+    <div className="perspective-1000 w-full h-full">
+      <motion.div
+        initial="initial"
+        animate="in"
+        exit="out"
+        variants={pageVariants}
+        transition={pageTransition}
+        className="w-full h-full transformStyle-preserve3d"
+        style={{
+          transformStyle: 'preserve-3d',
+        }}
+      >
+        {children}
+      </motion.div>
+    </div>
   );
 };
 
