@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import PageTransition from '@/components/layout/PageTransition';
 import { Card } from '@/components/ui/card';
@@ -13,10 +13,23 @@ import { FitDataDisplay } from '@/components/dashboard/FitDataDisplay';
 import { Bell } from 'lucide-react';
 import { useFitData } from '@/hooks/useFitData';
 import { stressData, activityData, insightData } from '@/utils/mockData';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { GoogleFitConnector } from '@/components/integration/GoogleFitConnector';
 
 const Dashboard = () => {
   const { user } = useSupabase();
-  const { fitData, isLoading, refreshFitData } = useFitData(true);
+  const [showConnector, setShowConnector] = useState(false);
+  const { fitData, isLoading, refreshFitData } = useFitData(false); // Don't auto-connect
+
+  const handleConnect = () => {
+    setShowConnector(true);
+  };
+
+  const handleConnectComplete = () => {
+    setShowConnector(false);
+    refreshFitData();
+  };
 
   return (
     <PageTransition>
@@ -44,7 +57,8 @@ const Dashboard = () => {
                 <FitDataDisplay 
                   fitData={fitData} 
                   isLoading={isLoading} 
-                  onRefresh={refreshFitData} 
+                  onRefresh={refreshFitData}
+                  onConnect={handleConnect} 
                 />
               </div>
             </motion.div>
@@ -118,6 +132,21 @@ const Dashboard = () => {
             </motion.div>
           </div>
         </div>
+
+        {/* Google Fit Connection Dialog - Only shown when explicitly triggered */}
+        <Dialog open={showConnector} onOpenChange={setShowConnector}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Connect to Google Fit</DialogTitle>
+              <DialogDescription>
+                Connect your Google Fit account to track your health and fitness data
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <GoogleFitConnector onConnect={handleConnectComplete} />
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </PageTransition>
   );

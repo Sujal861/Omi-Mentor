@@ -15,9 +15,10 @@ interface FitDataDisplayProps {
   fitData: FitnessData | null;
   isLoading: boolean;
   onRefresh: () => void;
+  onConnect?: () => void;
 }
 
-export const FitDataDisplay = ({ fitData, isLoading, onRefresh }: FitDataDisplayProps) => {
+export const FitDataDisplay = ({ fitData, isLoading, onRefresh, onConnect }: FitDataDisplayProps) => {
   const { user } = useSupabase();
   
   useEffect(() => {
@@ -40,8 +41,13 @@ export const FitDataDisplay = ({ fitData, isLoading, onRefresh }: FitDataDisplay
             <CardTitle>Fitness Data</CardTitle>
             <CardDescription>Connect Google Fit to see your data</CardDescription>
           </CardHeader>
-          <CardContent className="h-40 flex items-center justify-center">
+          <CardContent className="h-40 flex flex-col items-center justify-center gap-4">
             <p className="text-muted-foreground">No fitness data available</p>
+            {onConnect && (
+              <Button onClick={onConnect} className="mt-2">
+                Connect Google Fit
+              </Button>
+            )}
           </CardContent>
         </Card>
       </ThreeDCard>

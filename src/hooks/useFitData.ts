@@ -63,21 +63,14 @@ export const useFitData = (isConnected: boolean = false) => {
           setNetworkRetries(prev => prev + 1);
           
           if (networkRetries < MAX_RETRIES) {
-            toast.error(`Network issue detected. Retrying... (${networkRetries + 1}/${MAX_RETRIES})`, {
-              description: 'Please check your internet connection',
-              duration: 3000,
-            });
-            
-            // Try again after a delay
+            // Try again after a delay, but don't show toast to avoid popup spam
             setTimeout(() => fetchFitData(), 2000);
             return;
           }
         }
         
-        toast.error('Could not load fitness data', {
-          description: 'Please check your internet connection and try again',
-          duration: 5000,
-        });
+        // Don't show error toast, just set the error state - avoids popup spam
+        // We'll show connection button instead
       } finally {
         setIsLoading(false);
       }
@@ -96,7 +89,7 @@ export const useFitData = (isConnected: boolean = false) => {
   // Function to manually refresh data
   const refreshFitData = async () => {
     if (!realConnectionStatus) {
-      toast.error('Not connected to Google Fit');
+      // Don't show error toast, just return - avoids popup spam
       return;
     }
     
@@ -115,15 +108,10 @@ export const useFitData = (isConnected: boolean = false) => {
       console.error('Error refreshing fitness data:', err);
       setError(err.message || 'Failed to refresh fitness data');
       
-      // Check if it's a network error
-      if (err.message?.includes('Failed to fetch') || err.message?.includes('NetworkError') || 
-          err.message?.includes('Network request failed') || !navigator.onLine) {
-        toast.error('Network error', {
-          description: 'Please check your internet connection and try again',
-        });
-      } else {
-        toast.error('Could not update fitness data');
-      }
+      // Only show toast on manual refresh, not automatic
+      toast.error('Could not update fitness data', {
+        description: 'Please check your connection and try again',
+      });
     } finally {
       setIsLoading(false);
     }
