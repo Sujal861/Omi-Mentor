@@ -25,7 +25,7 @@ const Layout: React.FC<LayoutProps> = ({ requireAuth = false }) => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
       {user ? (
         <SidebarProvider defaultOpen>
           <div className="flex w-full min-h-screen">
@@ -37,14 +37,14 @@ const Layout: React.FC<LayoutProps> = ({ requireAuth = false }) => {
               <Outlet />
             </main>
           </div>
-          <AIHealthAgent />
         </SidebarProvider>
       ) : (
         <>
           <Outlet />
-          <AIHealthAgent />
         </>
       )}
+      {/* AI Health Agent is now placed outside other containers for consistent positioning */}
+      <AIHealthAgent />
     </div>
   );
 };

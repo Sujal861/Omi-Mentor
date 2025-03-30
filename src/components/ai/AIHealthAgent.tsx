@@ -176,23 +176,25 @@ const AIHealthAgent = () => {
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button - relocated to left corner */}
       <button
         onClick={toggleAgent}
-        className="fixed bottom-6 right-6 z-50 p-3 rounded-full shadow-lg bg-gradient-to-r from-balance-blue to-balance-indigo text-white"
+        className="fixed bottom-6 left-6 z-50 p-3 rounded-full shadow-lg bg-gradient-to-r from-balance-blue to-balance-indigo text-white hover:shadow-xl transition-all duration-300 flex items-center space-x-2"
+        aria-label="Health Assistant"
       >
         {isOpen ? <X size={24} /> : <Bot size={24} />}
+        {!isOpen && <span className="text-sm font-medium hidden md:inline">Ask Omi</span>}
       </button>
       
-      {/* Agent dialogue */}
+      {/* Agent dialogue - adjusted to open from left */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95, x: -20 }}
+            animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95, x: -20 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-20 right-6 z-50 w-[350px] max-w-[90vw]"
+            className="fixed bottom-20 left-6 z-50 w-[350px] max-w-[90vw]"
           >
             <ThreeDCard className="overflow-hidden" rotationIntensity={5}>
               <Card className="border-0 shadow-none h-[500px] max-h-[70vh] flex flex-col">
