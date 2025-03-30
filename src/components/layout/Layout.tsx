@@ -4,6 +4,7 @@ import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from './Sidebar';
 import { useSupabase } from '@/context/SupabaseContext';
+import AIHealthAgent from '../ai/AIHealthAgent';
 
 type LayoutProps = {
   requireAuth?: boolean;
@@ -36,9 +37,13 @@ const Layout: React.FC<LayoutProps> = ({ requireAuth = false }) => {
               <Outlet />
             </main>
           </div>
+          <AIHealthAgent />
         </SidebarProvider>
       ) : (
-        <Outlet />
+        <>
+          <Outlet />
+          <AIHealthAgent />
+        </>
       )}
     </div>
   );
