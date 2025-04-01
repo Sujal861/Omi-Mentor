@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 // Define result types for auth operations
 type AuthResult = {
@@ -30,13 +30,38 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Get initial session and set up listener
     const fetchSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      setUser(session?.user ?? null);
+      // Check for auth hash in URL (from email links)
+      const hasHashParams = window.location.hash && window.location.hash.includes('access_token');
+      
+      if (hasHashParams) {
+        // Handle the OAuth callback
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          toast.error('Authentication error', { description: error.message });
+        } else if (data?.session) {
+          // Successfully authenticated via email link
+          setSession(data.session);
+          setUser(data.session.user);
+          toast.success('Logged in successfully');
+          
+          // Clean up the URL by removing the hash
+          window.history.replaceState(null, '', window.location.pathname);
+          
+          // Redirect to dashboard or a protected route
+          navigate('/dashboard');
+        }
+      } else {
+        // Normal session check
+        const { data: { session } } = await supabase.auth.getSession();
+        setSession(session);
+        setUser(session?.user ?? null);
+      }
+      
       setLoading(false);
 
       // Listen for auth changes
@@ -53,7 +78,7 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
 
     fetchSession();
-  }, []);
+  }, [navigate]);
 
   // Sign in function
   const signIn = async (email: string, password: string): Promise<AuthResult> => {
