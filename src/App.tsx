@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SupabaseProvider } from "@/context/SupabaseContext";
 import { AnimatePresence } from "framer-motion";
 
@@ -13,6 +13,7 @@ import Dashboard from "./pages/Dashboard";
 import Insights from "./pages/Insights";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";  // Restored Login page import
 import Register from "./pages/Register";
 
 const queryClient = new QueryClient();
@@ -26,11 +27,12 @@ const App = () => (
             <AnimatePresence mode="wait">
               <Routes>
                 {/* Public routes */}
+                <Route path="/login" element={<Login />} />  {/* Restored login route */}
                 <Route path="/register" element={<Register />} />
                 
                 {/* Home page routes (both auth and non-auth) */}
                 <Route element={<Layout />}>
-                  <Route index element={<Navigate to="/home" replace />} />
+                  <Route index element={<Home />} />
                   <Route path="/home" element={<Home />} />
                 </Route>
                 
@@ -42,7 +44,6 @@ const App = () => (
                 </Route>
                 
                 {/* Redirects */}
-                <Route path="/login" element={<Navigate to="/home" replace />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AnimatePresence>
@@ -56,3 +57,4 @@ const App = () => (
 );
 
 export default App;
+
