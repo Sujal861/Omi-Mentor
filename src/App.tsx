@@ -13,7 +13,6 @@ import Dashboard from "./pages/Dashboard";
 import Insights from "./pages/Insights";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
 import Register from "./pages/Register";
 
 const queryClient = new QueryClient();
@@ -27,18 +26,23 @@ const App = () => (
             <AnimatePresence mode="wait">
               <Routes>
                 {/* Public routes */}
-                <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                
+                {/* Home page routes (both auth and non-auth) */}
+                <Route element={<Layout />}>
+                  <Route index element={<Navigate to="/home" replace />} />
+                  <Route path="/home" element={<Home />} />
+                </Route>
                 
                 {/* Protected routes */}
                 <Route element={<Layout requireAuth />}>
-                  <Route index element={<Navigate to="/home" replace />} />
-                  <Route path="/home" element={<Home />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/insights" element={<Insights />} />
                   <Route path="/profile" element={<Profile />} />
                 </Route>
                 
+                {/* Redirects */}
+                <Route path="/login" element={<Navigate to="/home" replace />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AnimatePresence>
