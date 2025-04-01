@@ -43,7 +43,7 @@ const Layout: React.FC<LayoutProps> = ({ requireAuth = false }) => {
           <Outlet />
         </>
       )}
-      {/* AI Health Agent is now placed outside other containers for consistent positioning */}
+      {/* AI Health Agent is now always visible */}
       <AIHealthAgent />
     </div>
   );
