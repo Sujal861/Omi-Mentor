@@ -15,16 +15,24 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Index from "./pages/Index"; // Make sure we import Index correctly
+import Index from "./pages/Index";
 
-const queryClient = new QueryClient();
+// Create a new QueryClient instance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <SupabaseProvider>
         <TooltipProvider>
-          <div className="min-h-screen bg-white text-gray-700 perspective-2000">
+          <div className="min-h-screen bg-white text-gray-700">
             <AnimatePresence mode="wait">
               <Routes>
                 {/* Public routes */}
@@ -33,7 +41,7 @@ const App = () => (
                 
                 {/* Home page routes (both auth and non-auth) */}
                 <Route element={<Layout />}>
-                  <Route index element={<Index />} /> {/* Use Index component for the root route */}
+                  <Route index element={<Index />} />
                   <Route path="/home" element={<Home />} />
                 </Route>
                 

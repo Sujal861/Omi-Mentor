@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Outlet } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from './Sidebar';
 import { useSupabase } from '@/context/SupabaseContext';
@@ -11,11 +11,28 @@ type LayoutProps = {
 };
 
 const Layout: React.FC<LayoutProps> = ({ requireAuth = false }) => {
-  const { user } = useSupabase();
+  const { user, loading } = useSupabase();
+  const navigate = useNavigate();
 
+  // Handle auth redirects
+  useEffect(() => {
+    if (requireAuth && !loading && !user) {
+      // Redirect to login if auth is required but no user is logged in
+      navigate('/login', { replace: true });
+    }
+  }, [requireAuth, user, loading, navigate]);
+
+  // If still loading, show a minimal loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  // If auth is required and no user is found, the useEffect will handle redirect
   if (requireAuth && !user) {
-    // If authentication is required and no user is logged in, 
-    // the routing will automatically redirect to login page
     return null;
   }
 
@@ -36,4 +53,3 @@ const Layout: React.FC<LayoutProps> = ({ requireAuth = false }) => {
 };
 
 export default Layout;
-

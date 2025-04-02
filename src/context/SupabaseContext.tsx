@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 
 // Define result types for auth operations
 type AuthResult = {
@@ -32,59 +32,63 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const location = useLocation(); // Add location to check if we're on a protected route
+  const location = useLocation();
 
   useEffect(() => {
-    // Get initial session and set up listener
     const fetchSession = async () => {
-      // Check for auth hash in URL (from email links)
-      const hasHashParams = window.location.hash && window.location.hash.includes('access_token');
-      
-      if (hasHashParams) {
-        // Handle the OAuth callback
-        try {
-          const { data, error } = await supabase.auth.getSession();
-          if (error) {
-            toast.error('Authentication error', { description: error.message });
-          } else if (data?.session) {
-            // Successfully authenticated via email link
-            setSession(data.session);
-            setUser(data.session.user);
-            toast.success('Logged in successfully');
-            
-            // Clean up the URL by removing the hash
-            window.history.replaceState(null, '', window.location.pathname);
-            
-            // Redirect to dashboard or a protected route
-            navigate('/dashboard');
+      try {
+        // Check for auth hash in URL (from email links)
+        const hasHashParams = window.location.hash && window.location.hash.includes('access_token');
+        
+        if (hasHashParams) {
+          // Handle the OAuth callback
+          try {
+            const { data, error } = await supabase.auth.getSession();
+            if (error) {
+              toast.error('Authentication error', { description: error.message });
+            } else if (data?.session) {
+              // Successfully authenticated via email link
+              setSession(data.session);
+              setUser(data.session.user);
+              toast.success('Logged in successfully');
+              
+              // Clean up the URL by removing the hash
+              window.history.replaceState(null, '', window.location.pathname);
+              
+              // Redirect to dashboard or a protected route
+              navigate('/dashboard');
+            }
+          } catch (error) {
+            console.error('Error processing authentication:', error);
           }
-        } catch (error) {
-          console.error('Error processing authentication:', error);
+        } else {
+          // Normal session check
+          try {
+            const { data } = await supabase.auth.getSession();
+            setSession(data.session);
+            setUser(data.session?.user ?? null);
+          } catch (error) {
+            console.error('Error getting session:', error);
+          }
         }
-      } else {
-        // Normal session check
-        try {
-          const { data: { session } } = await supabase.auth.getSession();
-          setSession(session);
-          setUser(session?.user ?? null);
-        } catch (error) {
-          console.error('Error getting session:', error);
-        }
+        
+        setLoading(false);
+
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          (_event, session) => {
+            setSession(session);
+            setUser(session?.user ?? null);
+          }
+        );
+
+        return () => {
+          subscription.unsubscribe();
+        };
+      } catch (e) {
+        console.error("Error in auth setup:", e);
+        setLoading(false);
       }
-      
-      setLoading(false);
-
-      // Listen for auth changes
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        (_event, session) => {
-          setSession(session);
-          setUser(session?.user ?? null);
-        }
-      );
-
-      return () => {
-        subscription.unsubscribe();
-      };
     };
 
     fetchSession();
@@ -178,6 +182,7 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       toast.success('Signed out successfully');
+      navigate('/');
     } catch (error: any) {
       toast.error('Error signing out', { description: error.message });
       throw error;
