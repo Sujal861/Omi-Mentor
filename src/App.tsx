@@ -13,21 +13,21 @@ import Dashboard from "./pages/Dashboard";
 import Insights from "./pages/Insights";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";  // Restored Login page import
+import Login from "./pages/Login";
 import Register from "./pages/Register";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <SupabaseProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <SupabaseProvider>
         <TooltipProvider>
           <div className="min-h-screen bg-white text-gray-700 perspective-2000">
             <AnimatePresence mode="wait">
               <Routes>
                 {/* Public routes */}
-                <Route path="/login" element={<Login />} />  {/* Restored login route */}
+                <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 
                 {/* Home page routes (both auth and non-auth) */}
@@ -51,10 +51,9 @@ const App = () => (
           <Toaster />
           <Sonner position="top-right" expand={true} closeButton={true} richColors={true} />
         </TooltipProvider>
-      </BrowserRouter>
-    </SupabaseProvider>
+      </SupabaseProvider>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 
 export default App;
-
