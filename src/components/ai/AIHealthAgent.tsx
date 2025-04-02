@@ -21,7 +21,7 @@ const AIHealthAgent = () => {
     if (isOpen && messages.length === 0) {
       const greeting: Message = {
         id: Date.now().toString(),
-        content: "Hi there! 👋 I'm Omi, your health assistant. How can I help you today? You can ask me about exercise, nutrition, sleep, or stress management.",
+        content: "Hi there! 👋 I'm Omi, your health assistant. Need help choosing a program or have questions about balance improvement? Ask me anything!",
         type: 'agent',
         timestamp: new Date(),
       };
@@ -29,7 +29,7 @@ const AIHealthAgent = () => {
     }
   }, [isOpen, messages.length]);
 
-  // Show popup after 15 seconds if user hasn't interacted yet
+  // Show popup after 8 seconds if user hasn't interacted yet
   useEffect(() => {
     const savedInteraction = localStorage.getItem('chatInteracted');
     if (savedInteraction) {
@@ -39,7 +39,7 @@ const AIHealthAgent = () => {
         if (!hasInteracted && !isOpen) {
           setIsOpen(true);
         }
-      }, 15000);
+      }, 8000);
       
       return () => clearTimeout(timer);
     }

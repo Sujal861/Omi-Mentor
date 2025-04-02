@@ -1,7 +1,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Calendar, DollarSign, Award, Users, Send } from 'lucide-react';
+import { MessageSquare, Calendar, DollarSign, Award, Users, Send, FileText, HelpCircle, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -58,7 +58,7 @@ const AIHealthAgentDialog: React.FC<AIHealthAgentDialogProps> = ({
           style={{ position: 'fixed' }}
         >
           <ThreeDCard className="overflow-hidden" rotationIntensity={5}>
-            <Card className="border-0 shadow-none h-[500px] max-h-[70vh] flex flex-col">
+            <Card className="border-0 shadow-none h-[520px] max-h-[70vh] flex flex-col">
               <CardHeader className="bg-gradient-to-r from-balance-blue via-indigo-500 to-balance-indigo text-white py-3">
                 <CardTitle className="flex items-center text-lg">
                   <MessageSquare className="mr-2" size={20} />
@@ -76,7 +76,7 @@ const AIHealthAgentDialog: React.FC<AIHealthAgentDialogProps> = ({
                     transition={{ delay: 0.5 }}
                     className="px-4 pb-3"
                   >
-                    <p className="text-xs text-gray-500 mb-2">Quick Actions:</p>
+                    <p className="text-xs text-gray-500 mb-2">I can help you with:</p>
                     <div className="grid grid-cols-2 gap-2">
                       <Button
                         size="sm"
@@ -114,6 +114,48 @@ const AIHealthAgentDialog: React.FC<AIHealthAgentDialogProps> = ({
                         <Award size={14} className="mr-1" />
                         Testimonials
                       </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-xs justify-start hover:bg-balance-blue/10 hover:text-balance-blue transition-colors"
+                        onClick={() => handleQuickAction("guides")}
+                      >
+                        <FileText size={14} className="mr-1" />
+                        Free Guides
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-xs justify-start hover:bg-balance-blue/10 hover:text-balance-blue transition-colors"
+                        onClick={() => handleQuickAction("faq")}
+                      >
+                        <HelpCircle size={14} className="mr-1" />
+                        FAQ
+                      </Button>
+                    </div>
+                    
+                    <div className="mt-3 pt-3 border-t border-gray-100">
+                      <p className="text-xs text-gray-500 mb-2">Popular questions:</p>
+                      <div className="space-y-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="w-full justify-start text-xs hover:bg-balance-blue/10 hover:text-balance-blue transition-colors"
+                          onClick={() => setInput("How can I improve my balance?")}
+                        >
+                          <Zap size={14} className="mr-1 text-amber-500" />
+                          How can I improve my balance?
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="w-full justify-start text-xs hover:bg-balance-blue/10 hover:text-balance-blue transition-colors"
+                          onClick={() => setInput("What program is best for beginners?")}
+                        >
+                          <Zap size={14} className="mr-1 text-amber-500" />
+                          What program is best for beginners?
+                        </Button>
+                      </div>
                     </div>
                   </motion.div>
                 )}
