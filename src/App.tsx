@@ -15,6 +15,7 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Index from "./pages/Index"; // Make sure we import Index correctly
 
 const queryClient = new QueryClient();
 
@@ -32,7 +33,7 @@ const App = () => (
                 
                 {/* Home page routes (both auth and non-auth) */}
                 <Route element={<Layout />}>
-                  <Route index element={<Home />} />
+                  <Route index element={<Index />} /> {/* Use Index component for the root route */}
                   <Route path="/home" element={<Home />} />
                 </Route>
                 

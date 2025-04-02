@@ -1,8 +1,9 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 // Define result types for auth operations
 type AuthResult = {
@@ -31,6 +32,7 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation(); // Add location to check if we're on a protected route
 
   useEffect(() => {
     // Get initial session and set up listener
@@ -40,26 +42,34 @@ export const SupabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       
       if (hasHashParams) {
         // Handle the OAuth callback
-        const { data, error } = await supabase.auth.getSession();
-        if (error) {
-          toast.error('Authentication error', { description: error.message });
-        } else if (data?.session) {
-          // Successfully authenticated via email link
-          setSession(data.session);
-          setUser(data.session.user);
-          toast.success('Logged in successfully');
-          
-          // Clean up the URL by removing the hash
-          window.history.replaceState(null, '', window.location.pathname);
-          
-          // Redirect to dashboard or a protected route
-          navigate('/dashboard');
+        try {
+          const { data, error } = await supabase.auth.getSession();
+          if (error) {
+            toast.error('Authentication error', { description: error.message });
+          } else if (data?.session) {
+            // Successfully authenticated via email link
+            setSession(data.session);
+            setUser(data.session.user);
+            toast.success('Logged in successfully');
+            
+            // Clean up the URL by removing the hash
+            window.history.replaceState(null, '', window.location.pathname);
+            
+            // Redirect to dashboard or a protected route
+            navigate('/dashboard');
+          }
+        } catch (error) {
+          console.error('Error processing authentication:', error);
         }
       } else {
         // Normal session check
-        const { data: { session } } = await supabase.auth.getSession();
-        setSession(session);
-        setUser(session?.user ?? null);
+        try {
+          const { data: { session } } = await supabase.auth.getSession();
+          setSession(session);
+          setUser(session?.user ?? null);
+        } catch (error) {
+          console.error('Error getting session:', error);
+        }
       }
       
       setLoading(false);
