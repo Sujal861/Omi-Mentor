@@ -12,6 +12,7 @@ interface FeatureProps {
     description: string;
     color: string;
     link?: string;
+    image?: string;
   };
   index: number;
 }
@@ -31,6 +32,16 @@ const FeatureCard = ({ feature, index }: FeatureProps) => {
       }}
       className="p-6 rounded-xl bg-white/90 backdrop-blur-sm border border-gray-200 shadow-lg transition-all duration-300 flex flex-col h-full"
     >
+      {feature.image && (
+        <div className="mb-4 overflow-hidden rounded-lg">
+          <img 
+            src={feature.image} 
+            alt={feature.title}
+            className="w-full h-48 object-cover transform transition-transform duration-500 hover:scale-105"
+            loading="lazy"
+          />
+        </div>
+      )}
       <div 
         className="mb-4 p-3 rounded-full bg-gradient-to-r w-fit transform transition-transform duration-300 hover:scale-110"
         style={{ backgroundImage: `linear-gradient(to right, ${feature.color})` }}

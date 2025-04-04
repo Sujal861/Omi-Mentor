@@ -14,7 +14,7 @@ const omiProducts = [
     name: "Omi Balance App",
     description: "Digital wellness app with meditation and breathwork practices",
     price: "$9.99/month",
-    imageUrl: "https://placehold.co/400x300/e2e8f0/475569?text=Balance+App",
+    imageUrl: "https://images.unsplash.com/photo-1609127102567-8a9a21dc27d8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8bWVkaXRhdGlvbiUyMGFwcHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60",
     learnMoreUrl: "https://www.omi.me/balance"
   },
   {
@@ -22,7 +22,7 @@ const omiProducts = [
     name: "Omi Breath",
     description: "Guided breathwork sessions for enhanced physical and mental wellbeing",
     price: "$7.99/month",
-    imageUrl: "https://placehold.co/400x300/e2e8f0/475569?text=Omi+Breath",
+    imageUrl: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8YnJlYXRoaW5nfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
     learnMoreUrl: "https://www.omi.me/breath"
   },
   {
@@ -30,7 +30,7 @@ const omiProducts = [
     name: "Omi Meditation",
     description: "Mindfulness and meditation practices for daily relaxation",
     price: "$6.99/month",
-    imageUrl: "https://placehold.co/400x300/e2e8f0/475569?text=Meditation",
+    imageUrl: "https://images.unsplash.com/photo-1508672019048-805c876b67e2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MjB8fG1lZGl0YXRpb258ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
     learnMoreUrl: "https://www.omi.me/meditation"
   },
   {
@@ -38,7 +38,7 @@ const omiProducts = [
     name: "Omi Sleep",
     description: "Sleep stories and sounds to help you get better rest",
     price: "$5.99/month",
-    imageUrl: "https://placehold.co/400x300/e2e8f0/475569?text=Sleep+Aid",
+    imageUrl: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8c2xlZXB8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
     learnMoreUrl: "https://www.omi.me/sleep"
   },
   {
@@ -46,7 +46,7 @@ const omiProducts = [
     name: "Omi Move",
     description: "Guided movement sessions to enhance your physical wellbeing",
     price: "$8.99/month",
-    imageUrl: "https://placehold.co/400x300/e2e8f0/475569?text=Movement",
+    imageUrl: "https://images.unsplash.com/photo-1601422407692-ec4eeec1d9b3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8eW9nYSUyMHBvc2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
     learnMoreUrl: "https://www.omi.me/move"
   },
   {
@@ -54,7 +54,7 @@ const omiProducts = [
     name: "Omi Complete Bundle",
     description: "Access to all Omi wellness products at a discounted price",
     price: "$19.99/month",
-    imageUrl: "https://placehold.co/400x300/e2e8f0/475569?text=Complete+Bundle",
+    imageUrl: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8d2VsbG5lc3N8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
     featured: true,
     learnMoreUrl: "https://www.omi.me/bundle"
   }
@@ -89,9 +89,9 @@ const Home = () => {
                 <div className="grid md:grid-cols-2 gap-6 p-6">
                   <div className="rounded-lg overflow-hidden">
                     <img 
-                      src="https://placehold.co/600x400/e2e8f0/475569?text=Complete+Bundle" 
+                      src={omiProducts[5].imageUrl}
                       alt="Omi Complete Bundle" 
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transform transition-transform duration-500 hover:scale-105"
                     />
                   </div>
                   <div className="flex flex-col justify-between">
@@ -142,7 +142,7 @@ const Home = () => {
                       <img 
                         src={product.imageUrl} 
                         alt={product.name} 
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transform transition-transform duration-500 hover:scale-105"
                       />
                     </div>
                     <CardContent className="flex-grow pt-6">

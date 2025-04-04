@@ -22,19 +22,19 @@ const testimonials = [
     name: "Sarah J.",
     text: "The balance exercises have made such a difference in my daily life. I'm much more confident and stable now!",
     role: "Client, Age 62",
-    image: "/testimonial-1.webp"
+    image: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8d29tYW58ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60"
   },
   {
     name: "Michael T.",
     text: "After just 8 weeks of coaching, I've seen remarkable improvements in my stability and overall strength.",
     role: "Client, Age 55",
-    image: "/testimonial-2.webp"
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8bWVufGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
   },
   {
     name: "Emily R.",
     text: "The personalized approach to my balance issues helped me regain my independence. Highly recommended!",
     role: "Client, Age 68",
-    image: "/testimonial-3.webp"
+    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8d29tYW58ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60"
   }
 ];
 
@@ -43,19 +43,22 @@ const features = [
     icon: Calendar,
     title: "Personalized Programs",
     description: "Custom exercise routines tailored to your specific needs and goals",
-    color: "from-blue-500 to-blue-600"
+    color: "from-blue-500 to-blue-600",
+    image: "https://images.unsplash.com/photo-1516726817505-f5ed825624d8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8ZXhlcmNpc2UlMjByb3V0aW5lfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
   },
   {
     icon: MessageSquare,
     title: "Expert Guidance",
     description: "One-on-one coaching sessions with certified balance specialists",
-    color: "from-indigo-500 to-indigo-600"
+    color: "from-indigo-500 to-indigo-600",
+    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Y29hY2hpbmd8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60"
   },
   {
     icon: Users,
     title: "Community Support",
     description: "Join a supportive community of individuals on the same journey",
-    color: "from-purple-500 to-purple-600"
+    color: "from-purple-500 to-purple-600",
+    image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8Z3JvdXAlMjBwZW9wbGV8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60"
   }
 ];
 
@@ -63,17 +66,20 @@ const benefits = [
   { 
     title: "Improved Stability", 
     icon: CheckCircle2,
-    description: "Develop better balance and reduce fall risk" 
+    description: "Develop better balance and reduce fall risk",
+    image: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8YmFsYW5jZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
   },
   { 
     title: "Increased Confidence", 
     icon: Medal,
-    description: "Feel more secure during daily activities" 
+    description: "Feel more secure during daily activities",
+    image: "https://images.unsplash.com/photo-1565035010836-039c185864c2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8Y29uZmlkZW5jZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60"
   },
   { 
     title: "Better Mobility", 
     icon: BarChart2,
-    description: "Enhance your overall movement quality and range" 
+    description: "Enhance your overall movement quality and range",
+    image: "https://images.unsplash.com/photo-1579126038374-6064e9370f0f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8bW9iaWxpdHl8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60"
   }
 ];
 
@@ -199,7 +205,7 @@ const Index = () => {
                 >
                   <div className="relative bg-gradient-to-br from-balance-blue/20 to-balance-indigo/20 rounded-2xl overflow-hidden shadow-2xl">
                     <img 
-                      src="/balance-coach-hero.webp" 
+                      src="https://images.unsplash.com/photo-1571388208497-71bedc66e932?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8YmFsYW5jZSUyMHRyYWluaW5nfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60" 
                       alt="Balance coaching session"
                       width="800"
                       height="600" 
@@ -239,6 +245,16 @@ const Index = () => {
                         transition={{ delay: index * 0.1 + 0.3 }}
                         className="bg-white p-8 rounded-xl shadow-xl border border-gray-100"
                       >
+                        {benefit.image && (
+                          <div className="mb-6 overflow-hidden rounded-lg h-48">
+                            <img 
+                              src={benefit.image}
+                              alt={benefit.title}
+                              className="w-full h-full object-cover transform transition-transform duration-500 hover:scale-105"
+                              loading="lazy"
+                            />
+                          </div>
+                        )}
                         <div className="bg-balance-blue/10 w-14 h-14 rounded-full flex items-center justify-center mb-4">
                           <benefit.icon size={24} className="text-balance-blue" />
                         </div>
