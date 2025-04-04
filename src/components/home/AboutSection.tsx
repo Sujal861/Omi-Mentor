@@ -17,7 +17,7 @@ const AboutSection = () => {
           <div className="absolute -bottom-4 -right-4 w-16 h-16 bg-balance-indigo/10 rounded-full"></div>
           <div className="relative z-10 rounded-2xl overflow-hidden shadow-xl border border-gray-100">
             <img 
-              src="https://images.unsplash.com/photo-1571019613576-2b22c76fd955?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8cGVyc29uYWwlMjB0cmFpbmVyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=600&q=60" 
+              src="https://images.unsplash.com/photo-1599058917765-a780eda07a3e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8cGVyc29uYWwlMjB0cmFpbmVyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=600&q=60" 
               alt="Balance Coach Profile" 
               className="w-full h-auto object-cover"
               width="600"

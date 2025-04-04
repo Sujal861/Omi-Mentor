@@ -32,7 +32,7 @@ const FeatureCard = ({ feature, index }: FeatureProps) => {
       }}
       className="p-6 rounded-xl bg-white/90 backdrop-blur-sm border border-gray-200 shadow-lg transition-all duration-300 flex flex-col h-full"
     >
-      {feature.image && (
+      {feature.image ? (
         <div className="mb-4 overflow-hidden rounded-lg">
           <img 
             src={feature.image} 
@@ -40,6 +40,10 @@ const FeatureCard = ({ feature, index }: FeatureProps) => {
             className="w-full h-48 object-cover transform transition-transform duration-500 hover:scale-105"
             loading="lazy"
           />
+        </div>
+      ) : (
+        <div className="mb-4 overflow-hidden rounded-lg bg-gray-100 h-48 flex items-center justify-center">
+          <feature.icon size={48} className="text-gray-400" />
         </div>
       )}
       <div 

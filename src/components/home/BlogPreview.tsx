@@ -10,21 +10,21 @@ const BlogPreview = () => {
       title: "5 Simple Exercises to Improve Your Balance Today",
       excerpt: "Learn these easy-to-follow exercises that you can do at home to enhance your stability immediately.",
       date: "May 15, 2023",
-      image: "/blog-1.webp",
+      image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Y29hY2hpbmd8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
       category: "Exercises"
     },
     {
       title: "The Science Behind Balance Training and Fall Prevention",
       excerpt: "Discover how specialized balance training can significantly reduce your risk of falls as you age.",
       date: "April 22, 2023",
-      image: "/blog-2.webp",
+      image: "https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTN8fGJhbGFuY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60",
       category: "Research"
     },
     {
       title: "Balance Training for Seniors: A Comprehensive Guide",
       excerpt: "A complete walkthrough of effective balance techniques specially designed for older adults.",
       date: "March 10, 2023",
-      image: "/blog-3.webp",
+      image: "https://images.unsplash.com/photo-1447452001602-7090c7ab2db3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fHNlbmlvciUyMGV4ZXJjaXNlfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
       category: "Senior Health"
     }
   ];
