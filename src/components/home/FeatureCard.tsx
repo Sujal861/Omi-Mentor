@@ -20,6 +20,30 @@ interface FeatureProps {
 const FeatureCard = ({ feature, index }: FeatureProps) => {
   const navigate = useNavigate();
   
+  // Default placeholder images based on feature title (using Unsplash)
+  const getPlaceholderImage = (title: string) => {
+    const keywords = {
+      'Personal Training': 'https://images.unsplash.com/photo-1571019613914-85f342c6a11e',
+      'Balance Assessment': 'https://images.unsplash.com/photo-1616279969743-51f55e9d4eba',
+      'Meditation': 'https://images.unsplash.com/photo-1506126613408-eca07ce68773',
+      'Yoga': 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b',
+      'Fall Prevention': 'https://images.unsplash.com/photo-1520719627573-5e2c1a6610f0',
+      'Nutrition': 'https://images.unsplash.com/photo-1498837167922-ddd27525d352'
+    };
+    
+    // Find a matching keyword or use a default image
+    const matchingKeyword = Object.keys(keywords).find(keyword => 
+      title.toLowerCase().includes(keyword.toLowerCase())
+    );
+    
+    return matchingKeyword 
+      ? keywords[matchingKeyword] 
+      : 'https://images.unsplash.com/photo-1571019613576-2b22c76fd955';
+  };
+  
+  // Use provided image or fallback to placeholder
+  const imageUrl = feature.image || getPlaceholderImage(feature.title);
+  
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -32,20 +56,14 @@ const FeatureCard = ({ feature, index }: FeatureProps) => {
       }}
       className="p-6 rounded-xl bg-white/90 backdrop-blur-sm border border-gray-200 shadow-lg transition-all duration-300 flex flex-col h-full"
     >
-      {feature.image ? (
-        <div className="mb-4 overflow-hidden rounded-lg">
-          <img 
-            src={feature.image} 
-            alt={feature.title}
-            className="w-full h-48 object-cover transform transition-transform duration-500 hover:scale-105"
-            loading="lazy"
-          />
-        </div>
-      ) : (
-        <div className="mb-4 overflow-hidden rounded-lg bg-gray-100 h-48 flex items-center justify-center">
-          <feature.icon size={48} className="text-gray-400" />
-        </div>
-      )}
+      <div className="mb-4 overflow-hidden rounded-lg h-48">
+        <img 
+          src={imageUrl} 
+          alt={feature.title}
+          className="w-full h-full object-cover transform transition-transform duration-500 hover:scale-105"
+          loading="lazy"
+        />
+      </div>
       <div 
         className="mb-4 p-3 rounded-full bg-gradient-to-r w-fit transform transition-transform duration-300 hover:scale-110"
         style={{ backgroundImage: `linear-gradient(to right, ${feature.color})` }}
